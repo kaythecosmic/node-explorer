@@ -9,16 +9,17 @@
 </head>
 
 <body>
-    <form action="/add">
+    <form action="http://localhost:3000/addNew" method="POST" enctype="multipart/form-data">
         <table class="main-table">
             <tr>
                 <td>
-                    <input type="text" name="cmlNUmber" id="cmlNumber">
+                    <input type="text" name="cmlNumber" id="cmlNumber" value="123654">
                 </td>
 
                 <td>
                     <input type="file" name="licenceDocs" id="licenceDocs">
                 </td>
+                
                 <td>
                     <input type="file" name="correspondence" id="correspondence">
                 </td>
@@ -33,8 +34,6 @@
                 </td>
             </tr>
         </table>
-
-
     </form>
 
 </body>
