@@ -2,7 +2,6 @@ const { BrowserWindow, app } = require("electron")
 const express = require("express")
 const path = require("node:path")
 const os = require("os")
-const bodyParser = require('body-parser');
 const multer = require('multer')
 const fs = require("fs")
 
@@ -42,13 +41,6 @@ const uploadList = upload.fields([
     { name: 'testReports', maxCount: 1 },
     { name: 'inspectionReport', maxCount: 1 },
 ])
-
-// expressApp.use(bodyParser.urlencoded({ extended: true }));
-
-expressApp.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/`);
-});
-
 
 /* =============== Documentation Object ===============
 >> function expressApp.post(): Params { '/addNew', (req, res) }
@@ -98,32 +90,32 @@ Function to create the main window and start the Express server.
 The main window displays the Document Explorer app.
 */
 
-// function createWindow() {
-//     const mainWindow = new BrowserWindow({
-//         title: "Document Explorer",
-//         width: 1600,
-//         height: 900
-//     });
-//     let renderFile = path.join(__dirname, "./renders/index.html")
-//     mainWindow.loadFile(renderFile);
+function createWindow() {
+    const mainWindow = new BrowserWindow({
+        title: "Document Explorer",
+        width: 1600,
+        height: 900
+    });
+    let renderFile = path.join(__dirname, "./renders/index.html")
+    mainWindow.loadFile(renderFile);
 
-//     expressApp.listen(PORT, () => {
-//         console.log(`Server running at http://localhost:${PORT}/`);
-//     });
-// }
+    expressApp.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}/`);
+    });
+}
 
-// app.whenReady().then(() => {
-//     createWindow();
-// });
+app.whenReady().then(() => {
+    createWindow();
+});
 
-// app.on('window-all-closed', () => {
-//     if (!isMacOS) {
-//         app.quit();
-//     }
-// })
+app.on('window-all-closed', () => {
+    if (!isMacOS) {
+        app.quit();
+    }
+})
 
-// app.on('activate', () => {
-//     if (BrowserWindow.getAllWindows().length === 0) {
-//         createWindow()
-//     }
-// })
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow()
+    }
+})
