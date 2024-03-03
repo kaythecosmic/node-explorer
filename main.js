@@ -127,3 +127,37 @@ The main window displays the Document Explorer app.
 //         createWindow()
 //     }
 // })
+
+
+// Define route to display data
+expressApp.get('/displayData', (req, res) => {
+    try {
+        // Read fileList.json
+        const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+
+        // Generate HTML table
+        let tableHtml = '';
+
+        for (const key in fileListData) {
+            if (fileListData.hasOwnProperty(key)) {
+                const rowData = fileListData[key];
+                tableHtml += `<tr><td>${key}</td>`;
+                for (const fileKey in rowData) {
+                    if (rowData.hasOwnProperty(fileKey)) {
+                        const filePath = rowData[fileKey];
+                        tableHtml += `<td><a href="${filePath}" target="_blank">${filePath}</a></td>`;
+                    }
+                }
+                tableHtml += '</tr>';
+            }
+        }
+
+
+        // Send HTML response
+        res.send(tableHtml);
+    } catch (error) {
+        console.error('Error reading or parsing JSON file:', error.message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
