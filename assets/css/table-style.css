@@ -1,0 +1,179 @@
+@import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@500;700&display=swap);
+@font-face {
+  font-family: "Roboto";
+  src: url("../fonts/Roboto-Medium.woff2") format("woff2"),
+    url("../fonts/Roboto-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --primary-100: #003468;
+  --grey-50: #f8fafc;
+  --grey-100: #f1f5f9;
+  --grey-200: #e2e8f0;
+  --grey-300: #cbd5e1;
+  --grey-400: #94a3b8;
+  --grey-500: #64748b;
+  --grey-600: #475569;
+  --grey-700: #334155;
+  --grey-800: #1e293b;
+  --grey-900: #0f172a;
+
+  /* rest of the colors */
+  --key-color-1: #1976d2;
+  --key-color-2: #81c1ff;
+  --white: #fff;
+  --red-light: #f8d7da;
+  --red-dark: #842029;
+  --green-light: #d1e7dd;
+  --green-dark: #0f5132;
+
+  /* fonts  */
+  --roboto: "Roboto", sans-serif;
+  --Montserrat: "Montserrat", sans-serif;
+  --bodyFont: "Nunito", sans-serif;
+  --smallText: 0.7em;
+
+  /* rest of the vars */
+  --backgroundColor: var(--grey-50);
+  --textColor: var(--grey-900);
+  --borderRadius: 0.3rem;
+  --letterSpacing: 1px;
+  --transition: 0.3s ease-in-out all;
+  --max-width: 1120px;
+  --fixed-width: 600px;
+
+  /* box shadow*/
+  --shadow-white: 0 1px 3px 0 rgba(255, 255, 255, 0.692);
+  --shadow-2: 0 2px 6px 2px rgba(0, 0, 0, 0.3),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--roboto);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 4px;
+}
+
+.custom-file-upload:active {
+  background: #29ce81;
+}
+
+.form-elements-container {
+  margin: auto;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 90vw;
+  font-family: var(--roboto);
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+.form-cml-input {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: space-between;
+}
+
+.input-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
+  padding: 10px;
+  width: 20%;
+  min-height: 100px;
+  border-radius: 5%;
+}
+
+.input-cell input[type="text"] {
+  border: 0.5px solid grey;
+  padding: 10px;
+  outline: none;
+}
+
+.input-cell span {
+  display: inline-block;
+  width: 240px;
+  text-wrap: wrap;
+  word-wrap: break-word;
+  color: green;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+.input-cell h3 {
+  position: relative;
+  top: 0px;
+  margin-bottom: 20px;
+}
+
+.main-table {
+  width: 90%;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  font-size: 1.5rem;
+
+  /* border: 3px solid black; */
+}
+
+th {
+  padding: 10px;
+  font-size: 25px;
+}
+
+.table-head {
+  width: 80vw;
+  text-align: center;
+  vertical-align: middle;
+  padding: 20px;
+  background-color: #69385c;
+  color: #faf9f6;
+}
+
+td {
+  padding: 20px;
+  margin: 15px;
+}
+
+.table-data {
+  width: 80vw;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+}
+
+tr:nth-child(even) {
+  background-color: #e7dbe4;
+}
+
+a {
+  color: black;
+}
+
+.main-table a:hover {
+  color: #69385c;
+  text-decoration: underline;
+}

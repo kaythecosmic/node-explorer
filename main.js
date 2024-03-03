@@ -1,16 +1,26 @@
-const { BrowserWindow, app } = require("electron")
+const { BrowserWindow, app, ipcMain } = require("electron")
 const express = require("express")
 const path = require("node:path")
 const os = require("os")
 const multer = require('multer')
 const fs = require("fs")
+const ejs = require("ejs")
 
 const dbFilePath = "fileList.json"
 
 const PORT = 3000;
 const isMacOS = process.platform === 'darwin';
 const expressApp = express();
+expressApp.engine('html', ejs.renderFile);
+expressApp.use(express.static(path.join(__dirname, "assets")))
 
+// Enable CORS middleware
+expressApp.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 
 const multerStore = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -42,6 +52,14 @@ const uploadList = upload.fields([
     { name: 'inspectionReport', maxCount: 1 },
 ])
 
+
+expressApp.get('/', (req, res) => {
+    var filepathtable = __dirname + "/renders/table.html";
+    filepathtable = filepathtable.replaceAll("\\", "/");
+    console.log(filepathtable);
+    res.render(filepathtable)
+});
+
 /* =============== Documentation Object ===============
 >> function expressApp.post(): Params { '/addNew', (req, res) }
 Endpoint: '/addNew'
@@ -50,12 +68,10 @@ Params
     req - request object,
     res - response object
 */
-
 expressApp.post('/addNew', uploadList, (req, res) => {
-
+    console.log("Hello World")
     const newCMLKey = req.body.cmlNumber;
     const allFiles = req.files;
-
     const newRecord = {
         [newCMLKey.toString()]: {
             "licenceDocs": allFiles.licenceDocs[0].path.replaceAll("\\", "/"),
@@ -71,6 +87,7 @@ expressApp.post('/addNew', uploadList, (req, res) => {
         let combined = { ...fileList, ...newRecord }
 
         const jsonData = JSON.stringify(combined, null, 2);
+        console.log(jsonData);
 
         fs.writeFile(dbFilePath, jsonData, (err) => {
             if (err) {
@@ -80,24 +97,69 @@ expressApp.post('/addNew', uploadList, (req, res) => {
             }
         });
     } catch (error) {
-        console.log("Error reading or parsing JSON file:", error.message);
+        const newRecordPush = JSON.stringify(newRecord, null, 2);
+        fs.writeFile(dbFilePath, newRecordPush, (err) => {
+            if (err) {
+                console.error('Error writing file:', err);
+            } else {
+                console.log('JSON file saved successfully.');
+            }
+        });
+        console.log("Empty Data File, added first record.");
+    }
+    finally {
+        res.redirect("/")
     };
 });
 
+expressApp.get('/displayData', (req, res) => {
+    try {
+        const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+        let tableHtml = '';
+        for (const key in fileListData) {
+            if (fileListData.hasOwnProperty(key)) {
+                const rowData = fileListData[key];
+                tableHtml += `<tr><td>${key}</td>`;
+                for (const fileKey in rowData) {
+                    if (rowData.hasOwnProperty(fileKey)) {
+                        const filePath = rowData[fileKey];
+                        console.log(__dirname);
+
+                        const fileUrl = `file://${app.getAppPath()}/${filePath}`;
+                        tableHtml += `<td><a href="${fileUrl}" target="_blank">Open File</a></td>`;
+                    }
+                }
+                tableHtml += '</tr>';
+            }
+        }
+        res.send(tableHtml);
+    } catch (error) {
+        console.error('Error reading or parsing JSON file:', error.message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+// Begin the electron code
 /* =============== Documentation Object ===============
 >> function createWindow(): Params { None }
 Function to create the main window and start the Express server.
 The main window displays the Document Explorer app.
 */
-
 function createWindow() {
     const mainWindow = new BrowserWindow({
         title: "Document Explorer",
         width: 1600,
-        height: 900
+        height: 900,
+        webPreferences: {
+            webSecurity: false
+        }
     });
     let renderFile = path.join(__dirname, "./renders/index.html")
     mainWindow.loadFile(renderFile);
+
+    // let renderFile = path.join(__dirname, "./renders/table.html")
+    // mainWindow.loadFile("./renders/table.html");
 
     expressApp.listen(PORT, () => {
         console.log(`Server running at http://localhost:${PORT}/`);
@@ -119,3 +181,4 @@ app.on('activate', () => {
         createWindow()
     }
 })
+
