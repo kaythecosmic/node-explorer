@@ -12,6 +12,13 @@ const PORT = 3000;
 const isMacOS = process.platform === 'darwin';
 const expressApp = express();
 
+// Enable CORS middleware
+expressApp.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 
 const multerStore = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -145,13 +152,13 @@ expressApp.get('/displayData', (req, res) => {
                 for (const fileKey in rowData) {
                     if (rowData.hasOwnProperty(fileKey)) {
                         const filePath = rowData[fileKey];
-                        tableHtml += `<td><a href="${filePath}" target="_blank">${filePath}</a></td>`;
+                        // Use the raw file path without modification
+                        tableHtml += `<td><a href="../${filePath}" target="_blank">${fileKey}</a></td>`;
                     }
                 }
                 tableHtml += '</tr>';
             }
         }
-
 
         // Send HTML response
         res.send(tableHtml);
@@ -160,4 +167,5 @@ expressApp.get('/displayData', (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 
