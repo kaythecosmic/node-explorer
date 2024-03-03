@@ -153,7 +153,7 @@ expressApp.get('/displayData', (req, res) => {
                     if (rowData.hasOwnProperty(fileKey)) {
                         const filePath = rowData[fileKey];
                         // Use the raw file path without modification
-                        tableHtml += `<td><a href="../${filePath}" target="_blank">${fileKey}</a></td>`;
+                        tableHtml += `<td><a href="../${filePath}" target="_blank">Open File</a></td>`;
                     }
                 }
                 tableHtml += '</tr>';
