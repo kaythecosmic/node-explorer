@@ -155,8 +155,9 @@ function createWindow() {
             webSecurity: false
         }
     });
-    let renderFile = path.join(__dirname, "./renders/index.html")
-    mainWindow.loadFile(renderFile);
+    // let renderFile = path.join(__dirname, "./renders/index.html")
+    // mainWindow.loadFile(renderFile);
+    mainWindow.loadURL(`http://localhost:${PORT}/`);
 
     // let renderFile = path.join(__dirname, "./renders/table.html")
     // mainWindow.loadFile("./renders/table.html");
