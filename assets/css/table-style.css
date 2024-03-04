@@ -64,7 +64,8 @@ input[type="file"] {
 
 .custom-file-upload {
   display: inline-block;
-  padding: 6px 12px;
+  text-align: center;
+  padding: 8px 12px;
   cursor: pointer;
   background-color: #f0f0f0;
   color: #333;
@@ -113,7 +114,7 @@ input[type="file"] {
 
 .input-cell input[type="text"] {
   border: 0.5px solid grey;
-  padding: 10px;
+  padding: 15px;
   outline: none;
 }
 
@@ -130,7 +131,7 @@ input[type="file"] {
 .input-cell h3 {
   position: relative;
   top: 0px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .main-table {
@@ -139,14 +140,54 @@ input[type="file"] {
   margin-left: auto;
   margin-right: auto;
   border-collapse: collapse;
-  font-size: 1.5rem;
+  font-size: 1rem;
+}
 
-  /* border: 3px solid black; */
+/* Table Buttons */
+.custom-file-upload-table {
+  font-size: 16px;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  background-color: #3f3f3f;
+  color: #333;
+  border-radius: 4px;
+  transition: var(--transition);
+  color: whitesmoke;
+}
+.custom-file-upload-table:hover {
+  box-shadow: var(--shadow-2);
+}
+.custom-file-upload-table:active {
+  background: #29ce81;
+}
+
+.table-submit-btn {
+  color: whitesmoke;
+  border: none;
+  background-color: green;
+  font-size: 16px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.btn-hide {
+  display: none;
+}
+
+.main-table td span {
+  display: block;
+  text-wrap: wrap;
+  word-wrap: break-word;
+  color: green;
+  font-size: 15px;
+  margin-top: 10px;
 }
 
 th {
   padding: 10px;
   font-size: 25px;
+  font-weight: 500;
 }
 
 .table-head {
@@ -170,16 +211,31 @@ td {
   padding: 5px;
 }
 
+.table-cell-active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 tr:nth-child(even) {
   background-color: #e7dbe4;
 }
 
 a {
-  color: black;
+  color: var(--grey-800);
   text-decoration: none;
+  transition: var(--transition);
 }
 
 .main-table a:hover {
-  color: #69385c;
-  text-decoration: none;
+  color: #cc0000;
+}
+
+.open-link {
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: var(--green-dark);
+  color: whitesmoke;
+  margin: 5px;
 }

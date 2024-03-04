@@ -25,20 +25,23 @@ expressApp.use((req, res, next) => {
 const multerStore = multer.diskStorage({
     destination: function (req, file, cb) {
         let cmlKey = req.body.cmlNumber;
-        let location = `database/${cmlKey}`;
-        const folderName = `database/${cmlKey}`;
+        let keyOnlyNumber = cmlKey.split('-')[0]
+        let location = `database/${keyOnlyNumber}`;
+        const folderName = `database/${keyOnlyNumber}`;
         try {
             if (!fs.existsSync(folderName)) {
                 fs.mkdirSync(folderName);
             }
         } catch (err) {
-            console.error(err);
+            console.error("Multer Store Error: " + err);
         }
+        // finally {
         cb(null, location)
+        // }
     },
     filename: function (req, file, cb) {
-        const uniqueKey = Date.now();
-        const filename = `${uniqueKey}-${file.originalname}`;
+        let cmlKey = req.body.cmlNumber;
+        const filename = `${cmlKey}-${file.originalname}`;
         cb(null, filename)
     }
 })
@@ -52,6 +55,9 @@ const uploadList = upload.fields([
     { name: 'inspectionReport', maxCount: 1 },
 ])
 
+const uplaodSingle = upload.fields([
+    { name: 'single-file', maxCount: 1 },
+])
 
 expressApp.get('/', (req, res) => {
     var filepathtable = __dirname + "/renders/table.html";
@@ -69,15 +75,15 @@ Params
     res - response object
 */
 expressApp.post('/addNew', uploadList, (req, res) => {
-    console.log("Hello World")
     const newCMLKey = req.body.cmlNumber;
     const allFiles = req.files;
+    console.log(typeof (allFiles.licenceDocs));
     const newRecord = {
         [newCMLKey.toString()]: {
-            "licenceDocs": allFiles.licenceDocs[0].path.replaceAll("\\", "/"),
-            "correspondence": allFiles.correspondence[0].path.replaceAll("\\", "/"),
-            "testReports": allFiles.testReports[0].path.replaceAll("\\", "/"),
-            "inspectionReport": allFiles.inspectionReport[0].path.replaceAll("\\", "/")
+            "licenceDocs": allFiles.licenceDocs ? allFiles.licenceDocs[0].path.replaceAll("\\", "/") : "",
+            "correspondence": allFiles.correspondence ? allFiles.correspondence[0].path.replaceAll("\\", "/") : "",
+            "testReports": allFiles.testReports ? allFiles.testReports[0].path.replaceAll("\\", "/") : "",
+            "inspectionReport": allFiles.inspectionReport ? allFiles.inspectionReport[0].path.replaceAll("\\", "/") : ""
         }
     }
 
@@ -112,6 +118,31 @@ expressApp.post('/addNew', uploadList, (req, res) => {
     };
 });
 
+
+expressApp.post('/addSingle', uplaodSingle, (req, res) => {
+    const newCMLKey = req.body.cmlNumber;
+    const allFiles = req.files;
+
+    var fileKeyPair = newCMLKey.split('-')
+    const dbCML = fileKeyPair[0];
+    const dbDocType = fileKeyPair[1];
+
+    const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+    fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
+
+    const fullFile = JSON.stringify(fileListData, null, 2);
+
+    fs.writeFile(dbFilePath, fullFile, (err) => {
+        if (err) {
+            console.error('\nError 100: While writing a file\n', err);
+        } else {
+            console.log('JSON File saved after adding one record.');
+        }
+        res.redirect("/")
+    });
+
+});
+
 expressApp.get('/displayData', (req, res) => {
     try {
         const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
@@ -123,21 +154,78 @@ expressApp.get('/displayData', (req, res) => {
                 for (const fileKey in rowData) {
                     if (rowData.hasOwnProperty(fileKey)) {
                         const filePath = rowData[fileKey];
-                        console.log(__dirname);
+                        if (filePath == "") {
 
-                        const fileUrl = `file://${app.getAppPath()}/${filePath}`;
-                        tableHtml += `<td><a href="${fileUrl}" target="_blank">Open File</a></td>`;
+                            tableHtml += `<td> 
+                                <form action="http://localhost:3000/addSingle" method="POST" enctype="multipart/form-data">
+                                    <label for="${key}-${fileKey}" class= "custom-file-upload-table">Browse</label> 
+                                    <input type="text" name="cmlNumber" id="cmlNumber" value="${key}-${fileKey}" style="display:none">
+                                    <input type="file" name="single-file" id="${key}-${fileKey}" onchange="updateTableFileName(this)">
+                                    <span id="${key}-${fileKey}-filename"></span>
+                                    <input id="${key}-${fileKey}-submit-btn" type="submit" value="Add This File" class="custom-file-upload-table table-submit-btn btn-hide">
+                                </form> 
+                            </td>`;
+                        }
+                        else {
+                            const fileUrl = `file://${app.getAppPath()}/${filePath}`;
+                            tableHtml += `<td><div class="table-cell-active"><a class="open-link" href="${fileUrl}" target="_blank">Open</a><a href="http://localhost:3000/delSingle?cmlNum=${key}&fileDocType=${fileKey}">Delete File</a></div></td>`;
+                        }
+
                     }
                 }
                 tableHtml += '</tr>';
             }
         }
-        res.send(tableHtml);
+        res.send(tableHtml); 
     } catch (error) {
         console.error('Error reading or parsing JSON file:', error.message);
         res.status(500).send('Internal Server Error');
     }
 });
+
+
+expressApp.get('/delSingle', (req, res) => {
+
+    const delCMLKey = req.query.cmlNum;
+    const delDocType = req.query.fileDocType;
+
+    console.log((delCMLKey));
+    console.log((delDocType));
+
+    const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+    fileListData[delCMLKey][delDocType] = "";
+
+    const fullFile = JSON.stringify(fileListData, null, 2);
+
+    fs.writeFile(dbFilePath, fullFile, (err) => {
+        if (err) {
+            console.error('\nError 100: While writing a file\n', err);
+        } else {
+            console.log('JSON File saved after adding one record.');
+        }
+        res.redirect("/")
+    });
+
+    // const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+
+    // console.log(fileListData)
+    // console.log(fileListData[dbCML][dbDocType])
+    // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/"); 
+    // console.log(fileListData)
+
+    // const fullFile = JSON.stringify(fileListData, null, 2);
+
+    // fs.writeFile(dbFilePath, fullFile, (err) => {
+    //     if (err) {
+    //         console.error('\nError 100: While writing a file\n', err);
+    //     } else {
+    //         console.log('JSON File saved after adding one record.');
+    //     }
+    //     res.redirect("/")
+    // });
+
+});
+
 
 
 // Begin the electron code
