@@ -119,7 +119,7 @@ expressApp.get('/displayData', (req, res) => {
         for (const key in fileListData) {
             if (fileListData.hasOwnProperty(key)) {
                 const rowData = fileListData[key];
-                tableHtml += `<tr><td>${key}</td>`;
+                tableHtml += `<tr><td>${key}<button onclick="deleteRow('${key}')"><img src ='${app.getAppPath()}/assets/images/trash-2.svg'></button></td>`;
                 for (const fileKey in rowData) {
                     if (rowData.hasOwnProperty(fileKey)) {
                         const filePath = rowData[fileKey];
@@ -135,6 +135,39 @@ expressApp.get('/displayData', (req, res) => {
         res.send(tableHtml);
     } catch (error) {
         console.error('Error reading or parsing JSON file:', error.message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+expressApp.delete('/deleteRow/:key', (req, res) => {
+    const keyToDelete = req.params.key;
+
+    try {
+        // Read fileList.json
+        const data = fs.readFileSync(dbFilePath, 'utf8');
+        const fileList = JSON.parse(data);
+
+        // Check if the key exists in the fileList
+        if (fileList.hasOwnProperty(keyToDelete)) {
+            // Delete the object of the current key from dbFilePath
+            delete fileList[keyToDelete];
+
+            // Update the JSON file
+            const updatedData = JSON.stringify(fileList, null, 2);
+            fs.writeFileSync(dbFilePath, updatedData);
+
+            // Delete the respective folder with the respective name key
+            const folderPathToDelete = path.join(app.getAppPath(), 'database', keyToDelete);
+            fs.rmdirSync(folderPathToDelete, { recursive: true });
+
+            console.log(`Row with key ${keyToDelete} deleted successfully.`);
+            res.status(200).send(`Row with key ${keyToDelete} deleted successfully.`);
+        } else {
+            console.error(`Row with key ${keyToDelete} not found.`);
+            res.status(404).send(`Row with key ${keyToDelete} not found.`);
+        }
+    } catch (error) {
+        console.error('Error deleting row:', error.message);
         res.status(500).send('Internal Server Error');
     }
 });

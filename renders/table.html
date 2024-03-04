@@ -93,6 +93,23 @@
                 fileName.textContent = '';
             }
         }
+
+        function deleteRow(key) {
+        fetch(`/deleteRow/${key}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log(`Row with key ${key} deleted successfully.`);
+                location.reload(); // Refresh the page after deletion
+            } else {
+                console.error(`Failed to delete row with key ${key}.`);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting row:', error.message);
+        });
+    }
     </script>
 </body>
 

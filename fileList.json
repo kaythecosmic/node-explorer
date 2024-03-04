@@ -1,26 +1,8 @@
 {
-  "12365": {
-    "licenceDocs": "database/12365/1709527588414-2017.pdf",
-    "correspondence": "database/12365/1709527588415-2020.pdf",
-    "testReports": "database/12365/1709527588421-2021.pdf",
-    "inspectionReport": "database/12365/1709527588422-2022.pdf"
-  },
   "123654": {
-    "licenceDocs": "database/123654/1709527033552-2017.pdf",
-    "correspondence": "database/123654/1709527033553-2020.pdf",
-    "testReports": "database/123654/1709527033559-2021.pdf",
-    "inspectionReport": "database/123654/1709527033560-2022.pdf"
-  },
-  "7896542": {
-    "licenceDocs": "database/7896542/1709527625124-2020.pdf",
-    "correspondence": "database/7896542/1709527625128-2017.pdf",
-    "testReports": "database/7896542/1709527625129-2021.pdf",
-    "inspectionReport": "database/7896542/1709527625130-2022.pdf"
-  },
-  "9700131015": {
-    "licenceDocs": "database/9700131015/1709527569462-2020.pdf",
-    "correspondence": "database/9700131015/1709527569467-2020.pdf",
-    "testReports": "database/9700131015/1709527569470-2021.pdf",
-    "inspectionReport": "database/9700131015/1709527569470-2022.pdf"
+    "licenceDocs": "database/123654/1709541099515-IMG_7947.png",
+    "correspondence": "database/123654/1709541099518-IMG_7941.png",
+    "testReports": "database/123654/1709541099521-IMG_7949.png",
+    "inspectionReport": "database/123654/1709541099526-IMG_7929.jpg"
   }
 }
