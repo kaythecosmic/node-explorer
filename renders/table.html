@@ -101,7 +101,7 @@
         .then(response => {
             if (response.ok) {
                 console.log(`Row with key ${key} deleted successfully.`);
-                location.reload(); // Refresh the page after deletion
+                location.reload(); 
             } else {
                 console.error(`Failed to delete row with key ${key}.`);
             }

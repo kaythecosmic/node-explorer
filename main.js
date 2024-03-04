@@ -143,20 +143,13 @@ expressApp.delete('/deleteRow/:key', (req, res) => {
     const keyToDelete = req.params.key;
 
     try {
-        // Read fileList.json
         const data = fs.readFileSync(dbFilePath, 'utf8');
         const fileList = JSON.parse(data);
 
-        // Check if the key exists in the fileList
         if (fileList.hasOwnProperty(keyToDelete)) {
-            // Delete the object of the current key from dbFilePath
             delete fileList[keyToDelete];
-
-            // Update the JSON file
             const updatedData = JSON.stringify(fileList, null, 2);
             fs.writeFileSync(dbFilePath, updatedData);
-
-            // Delete the respective folder with the respective name key
             const folderPathToDelete = path.join(app.getAppPath(), 'database', keyToDelete);
             fs.rmdirSync(folderPathToDelete, { recursive: true });
 
