@@ -1,20 +1,3 @@
 {
-  "ABC12365": {
-    "licenceDocs": "database/ABC12365/ABC12365-licenceDocs-2021.pdf",
-    "correspondence": "",
-    "testReports": "",
-    "inspectionReport": ""
-  },
-  "ABSK": {
-    "licenceDocs": "",
-    "correspondence": "database/ABSK/ABSK-correspondence-2022.pdf",
-    "testReports": "",
-    "inspectionReport": ""
-  },
-  "ADSSA": {
-    "licenceDocs": "",
-    "correspondence": "database/ADSSA/ADSSA-correspondence-2021.pdf",
-    "testReports": "",
-    "inspectionReport": ""
-  }
+
 }

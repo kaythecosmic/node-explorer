@@ -239,3 +239,10 @@ a {
   color: whitesmoke;
   margin: 5px;
 }
+
+.table-data  button {
+  margin-left: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

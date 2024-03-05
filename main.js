@@ -150,7 +150,7 @@ expressApp.get('/displayData', (req, res) => {
         for (const key in fileListData) {
             if (fileListData.hasOwnProperty(key)) {
                 const rowData = fileListData[key];
-                tableHtml += `<tr><td>${key}</td>`;
+                tableHtml += `<tr><td>${key}<button onclick="deleteRow('${key}')"><img src ='${app.getAppPath()}/assets/images/trash-2.svg'></button></td>`;
                 for (const fileKey in rowData) {
                     if (rowData.hasOwnProperty(fileKey)) {
                         const filePath = rowData[fileKey];
@@ -179,6 +179,67 @@ expressApp.get('/displayData', (req, res) => {
         res.send(tableHtml); 
     } catch (error) {
         console.error('Error reading or parsing JSON file:', error.message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+expressApp.get('/searchData/:searchKey', (req, res) => {
+    try {
+        const searchKey = req.params.searchKey;
+        const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+        let searchResults = [];
+
+        // Search for keys that match the search key
+        for (const key in fileListData) {
+            if (fileListData.hasOwnProperty(key) && key.includes(searchKey)) {
+                searchResults.push({ key: key, data: fileListData[key] });
+            }
+        }
+
+        // Generate HTML table for search results
+        let tableHtml = '';
+        for (const result of searchResults) {
+            const rowData = result.data;
+            tableHtml += `<tr><td>${result.key}<button onclick="deleteRow('${result.key}')"><img src='${app.getAppPath()}/assets/images/trash-2.svg'></button></td>`;
+            for (const fileKey in rowData) {
+                if (rowData.hasOwnProperty(fileKey)) {
+                    const filePath = rowData[fileKey];
+                    const fileUrl = `file://${app.getAppPath()}/${filePath}`;
+                    tableHtml += `<td><a href="${fileUrl}" target="_blank">Open File</a></td>`;
+                }
+            }
+            tableHtml += '</tr>';
+        }
+
+        res.send(tableHtml);
+    } catch (error) {
+        console.error('Error searching data:', error.message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+expressApp.delete('/deleteRow/:key', (req, res) => {
+    const keyToDelete = req.params.key;
+
+    try {
+        const data = fs.readFileSync(dbFilePath, 'utf8');
+        const fileList = JSON.parse(data);
+
+        if (fileList.hasOwnProperty(keyToDelete)) {
+            delete fileList[keyToDelete];
+            const updatedData = JSON.stringify(fileList, null, 2);
+            fs.writeFileSync(dbFilePath, updatedData);
+            const folderPathToDelete = path.join(app.getAppPath(), 'database', keyToDelete);
+            fs.rmdirSync(folderPathToDelete, { recursive: true });
+
+            console.log(`Row with key ${keyToDelete} deleted successfully.`);
+            res.status(200).send(`Row with key ${keyToDelete} deleted successfully.`);
+        } else {
+            console.error(`Row with key ${keyToDelete} not found.`);
+            res.status(404).send(`Row with key ${keyToDelete} not found.`);
+        }
+    } catch (error) {
+        console.error('Error deleting row:', error.message);
         res.status(500).send('Internal Server Error');
     }
 });
