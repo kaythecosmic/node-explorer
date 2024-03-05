@@ -60,6 +60,10 @@
             </div>
         </div>
     </form>
+    <div class="search-container">
+        <label for="searchInput">Search: </label>
+        <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchData()">
+    </div>    
     <table class="main-table">
         <thead class="table-head">
             <tr>
@@ -93,7 +97,44 @@
                 fileName.textContent = '';
             }
         }
+
+        function deleteRow(key) {
+        fetch(`/deleteRow/${key}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log(`Row with key ${key} deleted successfully.`);
+                location.reload(); 
+            } else {
+                console.error(`Failed to delete row with key ${key}.`);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting row:', error.message);
+        });
+        }
+        function searchData() {
+            const searchKey = document.getElementById('searchInput').value.trim();
+            if (searchKey === '') {
+                // If the search input is empty, display all data
+                fetch('http://localhost:3000/displayData')
+                    .then(response => response.text())
+                    .then(data => {
+                        document.querySelector('.table-data').innerHTML = data;
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            } else {
+                // If there is a search key, perform a search
+                fetch(`http://localhost:3000/searchData/${searchKey}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        document.querySelector('.table-data').innerHTML = data;
+                    })
+                    .catch(error => console.error('Error fetching search data:', error));
+            }
+        }
+
     </script>
 </body>
-
 </html>

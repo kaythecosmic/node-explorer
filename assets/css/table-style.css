@@ -183,3 +183,10 @@ a {
   color: #69385c;
   text-decoration: none;
 }
+
+.table-data  button {
+  margin-left: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
