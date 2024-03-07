@@ -61,9 +61,8 @@
         </div>
     </form>
     <div class="search-container">
-        <label for="searchInput">Search: </label>
-        <input type="text" class= "search-main" id="searchInput" placeholder="Search..." onkeyup="searchData()">
-    </div>    
+        <input type="text" class="search-main" id="searchInput" placeholder="Search..." onkeyup="searchData()">
+    </div>
     <table class="main-table">
         <thead class="table-head">
             <tr>
@@ -127,20 +126,20 @@
         }
 
         function deleteRow(key) {
-        fetch(`/deleteRow/${key}`, {
-            method: 'DELETE'
-        })
-        .then(response => {
-            if (response.ok) {
-                console.log(`Row with key ${key} deleted successfully.`);
-                location.reload(); 
-            } else {
-                console.error(`Failed to delete row with key ${key}.`);
-            }
-        })
-        .catch(error => {
-            console.error('Error deleting row:', error.message);
-        });
+            fetch(`/deleteRow/${key}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`Row with key ${key} deleted successfully.`);
+                        location.reload();
+                    } else {
+                        console.error(`Failed to delete row with key ${key}.`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting row:', error.message);
+                });
         }
         function searchData() {
             const searchKey = document.getElementById('searchInput').value.trim();
@@ -166,4 +165,5 @@
 
     </script>
 </body>
+
 </html>

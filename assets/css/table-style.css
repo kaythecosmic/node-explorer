@@ -1,4 +1,5 @@
 @import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@500;700&display=swap);
+
 @font-face {
   font-family: "Roboto";
   src: url("../fonts/Roboto-Medium.woff2") format("woff2"),
@@ -155,9 +156,11 @@ input[type="file"] {
   transition: var(--transition);
   color: whitesmoke;
 }
+
 .custom-file-upload-table:hover {
   box-shadow: var(--shadow-2);
 }
+
 .custom-file-upload-table:active {
   background: #29ce81;
 }
@@ -228,7 +231,7 @@ a {
   transition: var(--transition);
 }
 
-.main-table a:hover {
+.main-table td a:nth-child(2):hover {
   color: #cc0000;
 }
 
@@ -240,42 +243,33 @@ a {
   margin: 5px;
 }
 
-.table-data  button {
+.table-data button {
   margin-left: 10px;
   background: none;
   border: none;
   cursor: pointer;
 }
 
-.search-container 
-{
-  margin-left: auto;
-  margin-right: auto;
-  width: 30vw;
-  /* border: 2px solid black; */
+.search-container {
+  margin: auto;
+  width: 40vw;
   padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
-.search-container label
-{ 
-  font-family: var(--roboto);
-  font-size: large;
 
-}
-.search-main
-{
-  width: 20vw;
+.search-main {
+  width: 100%;
   border: 1px solid grey;
-  border-radius: 5px;
-  padding: 8px;
-  background-color:#FAF9F6;
+  border-radius: 2px;
+  padding: 10px;
+  background-color: #FAF9F6;
   transition: var(--transition);
   outline: none;
-  
 }
 
-.search-main:hover
-{
+.search-main:focus {
   box-shadow: var(--shadow-2);
 }
-
-
