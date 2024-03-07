@@ -246,3 +246,36 @@ a {
   border: none;
   cursor: pointer;
 }
+
+.search-container 
+{
+  margin-left: auto;
+  margin-right: auto;
+  width: 30vw;
+  /* border: 2px solid black; */
+  padding-bottom: 20px;
+}
+.search-container label
+{ 
+  font-family: var(--roboto);
+  font-size: large;
+
+}
+.search-main
+{
+  width: 20vw;
+  border: 1px solid grey;
+  border-radius: 5px;
+  padding: 8px;
+  background-color:#FAF9F6;
+  transition: var(--transition);
+  outline: none;
+  
+}
+
+.search-main:hover
+{
+  box-shadow: var(--shadow-2);
+}
+
+
