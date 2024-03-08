@@ -143,77 +143,43 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
 
 });
 
-expressApp.get('/displayData', (req, res) => {
+expressApp.get('/displayData/:searchKey?', (req, res) => {
     try {
+        const searchKey = req.params.searchKey || ''; 
         const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
         let tableHtml = '';
+
         for (const key in fileListData) {
             if (fileListData.hasOwnProperty(key)) {
-                const rowData = fileListData[key];
-                tableHtml += `<tr><td>${key}<button onclick="deleteRow('${key}')"><img src ='${app.getAppPath()}/assets/images/trash-2.svg'></button></td>`;
-                for (const fileKey in rowData) {
-                    if (rowData.hasOwnProperty(fileKey)) {
-                        const filePath = rowData[fileKey];
-                        if (filePath == "") {
-
-                            tableHtml += `<td> 
-                                <form action="http://localhost:3000/addSingle" method="POST" enctype="multipart/form-data">
-                                    <label for="${key}-${fileKey}" class= "custom-file-upload-table">Browse</label> 
-                                    <input type="text" name="cmlNumber" id="cmlNumber" value="${key}-${fileKey}" style="display:none">
-                                    <input type="file" name="single-file" id="${key}-${fileKey}" onchange="updateTableFileName(this)">
-                                    <span id="${key}-${fileKey}-filename"></span>
-                                    <input id="${key}-${fileKey}-submit-btn" type="submit" value="Add This File" class="custom-file-upload-table table-submit-btn btn-hide">
-                                </form> 
-                            </td>`;
+                if (searchKey === '' || key.includes(searchKey)) { 
+                    const rowData = fileListData[key];
+                    tableHtml += `<tr><td>${key}<button onclick="deleteRow('${key}')"><img src ='${app.getAppPath()}/assets/images/trash-2.svg'></button></td>`;
+                    for (const fileKey in rowData) {
+                        if (rowData.hasOwnProperty(fileKey)) {
+                            const filePath = rowData[fileKey];
+                            if (filePath == "") {
+                                tableHtml += `<td> 
+                                    <form action="http://localhost:3000/addSingle" method="POST" enctype="multipart/form-data">
+                                        <label for="${key}-${fileKey}" class= "custom-file-upload-table">Browse</label> 
+                                        <input type="text" name="cmlNumber" id="cmlNumber" value="${key}-${fileKey}" style="display:none">
+                                        <input type="file" name="single-file" id="${key}-${fileKey}" onchange="updateTableFileName(this)">
+                                        <span id="${key}-${fileKey}-filename"></span>
+                                        <input id="${key}-${fileKey}-submit-btn" type="submit" value="Add This File" class="custom-file-upload-table table-submit-btn btn-hide">
+                                    </form> 
+                                </td>`;
+                            } else {
+                                const fileUrl = `file://${app.getAppPath()}/${filePath}`;
+                                tableHtml += `<td><div class="table-cell-active"><a class="open-link" href="${fileUrl}" target="_blank">Open</a><a href="http://localhost:3000/delSingle?cmlNum=${key}&fileDocType=${fileKey}">Delete File</a></div></td>`;
+                            }
                         }
-                        else {
-                            const fileUrl = `file://${app.getAppPath()}/${filePath}`;
-                            tableHtml += `<td><div class="table-cell-active"><a class="open-link" href="${fileUrl}" target="_blank">Open</a><a href="http://localhost:3000/delSingle?cmlNum=${key}&fileDocType=${fileKey}">Delete File</a></div></td>`;
-                        }
-
                     }
-                }
-                tableHtml += '</tr>';
-            }
-        }
-        res.send(tableHtml); 
-    } catch (error) {
-        console.error('Error reading or parsing JSON file:', error.message);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-expressApp.get('/searchData/:searchKey', (req, res) => {
-    try {
-        const searchKey = req.params.searchKey;
-        const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-        let searchResults = [];
-
-        // Search for keys that match the search key
-        for (const key in fileListData) {
-            if (fileListData.hasOwnProperty(key) && key.includes(searchKey)) {
-                searchResults.push({ key: key, data: fileListData[key] });
-            }
-        }
-
-        // Generate HTML table for search results
-        let tableHtml = '';
-        for (const result of searchResults) {
-            const rowData = result.data;
-            tableHtml += `<tr><td>${result.key}<button onclick="deleteRow('${result.key}')"><img src='${app.getAppPath()}/assets/images/trash-2.svg'></button></td>`;
-            for (const fileKey in rowData) {
-                if (rowData.hasOwnProperty(fileKey)) {
-                    const filePath = rowData[fileKey];
-                    const fileUrl = `file://${app.getAppPath()}/${filePath}`;
-                    tableHtml += `<td><a href="${fileUrl}" target="_blank">Open File</a></td>`;
+                    tableHtml += '</tr>';
                 }
             }
-            tableHtml += '</tr>';
         }
-
         res.send(tableHtml);
     } catch (error) {
-        console.error('Error searching data:', error.message);
+        console.error('Error reading or parsing JSON file:', error.message);
         res.status(500).send('Internal Server Error');
     }
 });
