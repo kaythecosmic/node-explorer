@@ -1,1 +1,14 @@
-{}
+{
+  "12": {
+    "licenceDocs": "",
+    "correspondence": "",
+    "testReports": "",
+    "inspectionReport": ""
+  },
+  "Aond": {
+    "licenceDocs": "database/Aond/Aond-2020.pdf",
+    "correspondence": "",
+    "testReports": "database/Aond/Aond-2021.pdf",
+    "inspectionReport": ""
+  }
+}
