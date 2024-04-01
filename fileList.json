@@ -1,14 +1,26 @@
 {
-  "12": {
-    "licenceDocs": "",
-    "correspondence": "",
-    "testReports": "",
-    "inspectionReport": ""
+  "32545": {
+    "licenceDocs": "database/32545/32545-2020.pdf",
+    "correspondence": "database/32545/32545-2022.pdf",
+    "testReports": "database/32545/32545-testReports-2020.pdf",
+    "inspectionReport": "database/32545/32545-2021.pdf"
   },
-  "Aond": {
-    "licenceDocs": "database/Aond/Aond-2020.pdf",
-    "correspondence": "",
-    "testReports": "database/Aond/Aond-2021.pdf",
-    "inspectionReport": ""
+  "123654": {
+    "licenceDocs": "database/123654/123654-2017.pdf",
+    "correspondence": "database/123654/123654-2020.pdf",
+    "testReports": "database/123654/123654-2021.pdf",
+    "inspectionReport": "database/123654/123654-2022.pdf"
+  },
+  "9654127": {
+    "licenceDocs": "database/9654127/9654127-2021.pdf",
+    "correspondence": "database/9654127/9654127-2021.pdf",
+    "testReports": "database/9654127/9654127-2017.pdf",
+    "inspectionReport": "database/9654127/9654127-2022.pdf"
+  },
+  "9874562": {
+    "licenceDocs": "database/9874562/9874562-2022.pdf",
+    "correspondence": "database/9874562/9874562-2020.pdf",
+    "testReports": "database/9874562/9874562-testReports-2022.pdf",
+    "inspectionReport": "database/9874562/9874562-2021.pdf"
   }
 }

@@ -113,10 +113,17 @@ input[type="file"] {
   border-radius: 5%;
 }
 
-.input-cell input[type="text"] {
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-cell input[type="number"] {
   border: 0.5px solid grey;
   padding: 15px;
   outline: none;
+  -moz-appearance: textfield;
 }
 
 .input-cell span {
