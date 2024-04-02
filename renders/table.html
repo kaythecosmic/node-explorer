@@ -58,7 +58,8 @@
             <div class="input-cell">
                 <h3>Inspection Reports</h3>
                 <label for="inspectionReport" class="custom-file-upload">Browse</label>
-                <input type="file" name="inspectionReport" id="inspectionReport" onchange="updateFileName(this)" multiple>
+                <input type="file" name="inspectionReport" id="inspectionReport" onchange="updateFileName(this)"
+                    multiple>
                 <span id="inspectionReport-filename">No File Chosen</span>
             </div>
         </div>
@@ -144,6 +145,7 @@
                 });
         }
 
+        /*
         async function searchData() {
             const searchKey = document.getElementById('searchInput').value.trim();
             const response = await fetch(`http://localhost:3000/displayData/${searchKey}`)
@@ -153,6 +155,7 @@
                 })
                 .catch(error => console.error('Error fetching search data:', error));
         }
+        */
     </script>
 </body>
 

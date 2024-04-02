@@ -1,17 +1,26 @@
-const { BrowserWindow, app } = require("electron")
+const { BrowserWindow, app, ipcMain } = require("electron")
 const express = require("express")
 const path = require("node:path")
 const os = require("os")
 const bodyParser = require('body-parser');
 const multer = require('multer')
 const fs = require("fs")
+const ejs = require("ejs")
 
 const dbFilePath = "fileList.json"
 
 const PORT = 3000;
 const isMacOS = process.platform === 'darwin';
 const expressApp = express();
+expressApp.engine('html', ejs.renderFile);
+expressApp.use(express.static(path.join(__dirname, "assets")))
 
+expressApp.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 
 const multerStore = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -31,7 +40,7 @@ const multerStore = multer.diskStorage({
                 }
             }
         } catch (err) {
-            console.error(err);
+            console.error("Multer Store Error: " + err);
         }
         cb(null, fileLocation)
     },
@@ -62,7 +71,6 @@ expressApp.listen(PORT, () => {
 expressApp.get('/', (req, res) => {
     var filepathtable = __dirname + "/renders/table.html";
     filepathtable = filepathtable.replaceAll("\\", "/");
-    console.log(filepathtable);
     res.render(filepathtable)
 });
 
@@ -73,27 +81,14 @@ Handles POST requests, logs form data, and redirects to a new page.
 Params
     req - request object,
     res - response object
+*/
 
 expressApp.post('/addNew', uploadList, (req, res) => {
 
-    // console.log("___________________________________________________________________");
-    // console.log(req.body.cmlNumber);
-    // console.log(req.files);
-    // console.log("___________________________________________________________________");
     const newCMLKey = req.body.cmlNumber;
     const allFiles = req.files;
 
     // save the record in the json file
-
-    // const newRecord = {
-    //     [newCMLKey.toString()]: {
-    //         "licenceDocs": allFiles.licenceDocs ? allFiles.licenceDocs[0].path.replaceAll("\\", "/") : "",
-    //         "correspondence": allFiles.correspondence ? allFiles.correspondence[0].path.replaceAll("\\", "/") : "",
-    //         "testReports": allFiles.testReports ? allFiles.testReports[0].path.replaceAll("\\", "/") : "",
-    //         "inspectionReport": allFiles.inspectionReport ? allFiles.inspectionReport[0].path.replaceAll("\\", "/") : ""
-    //     }
-    // // }
-
     const newRecord = {
         [newCMLKey.toString()]: {
             "licenceDocs": [],
@@ -106,17 +101,11 @@ expressApp.post('/addNew', uploadList, (req, res) => {
     Object.keys(allFiles).forEach(key => {
         const currFileType = allFiles[key];
 
-        // console.log("\n\n\n")
-        // console.log(currFileType)
-        // console.log("\n\n\n")
-        // console.log(newRecord[newCMLKey.toString()][key])
         for (let j = 0; j < currFileType.length; j++) {
             const fileURL = currFileType[j].path.replaceAll("\\", "/");
             newRecord[newCMLKey.toString()][key].push(fileURL)
         }
     });
-
-    console.log(newRecord);
 
     try {
         const data = fs.readFileSync(dbFilePath, 'utf8');
@@ -124,7 +113,6 @@ expressApp.post('/addNew', uploadList, (req, res) => {
         let combined = { ...fileList, ...newRecord }
 
         const jsonData = JSON.stringify(combined, null, 2);
-
         fs.writeFile(dbFilePath, jsonData, (err) => {
             if (err) {
                 console.error('Error writing file:', err);
@@ -133,7 +121,18 @@ expressApp.post('/addNew', uploadList, (req, res) => {
             }
         });
     } catch (error) {
-        console.log("Error reading or parsing JSON file:", error.message);
+        const newRecordPush = JSON.stringify(newRecord, null, 2);
+        fs.writeFile(dbFilePath, newRecordPush, (err) => {
+            if (err) {
+                console.error('Error writing file:', err);
+            } else {
+                console.log('JSON file saved successfully.');
+            }
+        });
+        console.log("Empty Data File, added first record.");
+    }
+    finally {
+        res.redirect("/")
     };
 });
 
