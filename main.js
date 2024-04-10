@@ -161,7 +161,16 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
 
 });
 
+
+
+expressApp.get('/view/:searchKey?', (req, res) => {
+
+
+    res.render("./renders/view.html", { hello: 102 })
+});
+
 expressApp.get('/displayData/:searchKey?', (req, res) => {
+
     try {
         const searchKey = req.params.searchKey || '';
         const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));

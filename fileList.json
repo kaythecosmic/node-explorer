@@ -1,4 +1,21 @@
 {
+  "123456": {
+    "licenceDocs": [
+      "database/123456/licenceDocs/123456-licenceDocs-2017.pdf"
+    ],
+    "correspondence": [
+      "database/123456/correspondence/123456-correspondence-2021.pdf"
+    ],
+    "testReports": [
+      "database/123456/testReports/123456-testReports-2021.pdf"
+    ],
+    "inspectionReport": [
+      "database/123456/inspectionReport/123456-inspectionReport-2017.pdf",
+      "database/123456/inspectionReport/123456-inspectionReport-2020.pdf",
+      "database/123456/inspectionReport/123456-inspectionReport-2021.pdf",
+      "database/123456/inspectionReport/123456-inspectionReport-2022.pdf"
+    ]
+  },
   "dwcdq": {
     "licenceDocs": [
       "database/dwcdq/licenceDocs/dwcdq-licenceDocs-2021.pdf"
