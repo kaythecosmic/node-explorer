@@ -5,7 +5,8 @@ const os = require("os")
 const bodyParser = require('body-parser');
 const multer = require('multer')
 const fs = require("fs")
-const ejs = require("ejs")
+const ejs = require("ejs");
+const { table } = require("node:console");
 
 const dbFilePath = "fileList.json"
 
@@ -181,9 +182,16 @@ expressApp.get('/displayData/:searchKey?', (req, res) => {
                 if (searchKey === '' || key.includes(searchKey)) {
                     const rowData = fileListData[key];
                     tableHtml += `<tr><td>${key}<button onclick="deleteRow('${key}')"><img src ='${app.getAppPath()}/assets/images/trash-2.svg'></button></td>`;
-                    for (const fileKey in rowData) {
+                    let iterationCount = 0;
+                    
                         if (rowData.hasOwnProperty(fileKey)) {
                             const filePath = rowData[fileKey];
+                            for (const fileKey in rowData) {
+                                if (iterationCount < 2){
+                                    tableHtml += `<td><div class="table-cell-active">${key}</div></td>`;
+                                    iterationCount++;
+                                    continue;
+                                }
                             if (filePath == "") {
                                 tableHtml += `<td>
                                     <form action="http://localhost:3000/addSingle" method="POST" enctype="multipart/form-data">
@@ -195,8 +203,8 @@ expressApp.get('/displayData/:searchKey?', (req, res) => {
                                     </form>
                                 </td>`;
                             } else {
-                                const fileUrl = `file://${app.getAppPath()}/${filePath}`;
-                                tableHtml += `<td><div class="table-cell-active"><a class="open-link" href="${fileUrl}" target="_blank">Open</a><a href="http://localhost:3000/delSingle?cmlNum=${key}&fileDocType=${fileKey}">Delete File</a></div></td>`;
+                                const fileUrl = `file://${app.getAppPath()}/view/${key}-${fileKey}`;
+                                tableHtml += `<td><div class="table-cell-active"><a class="open-link" href="${fileUrl}" target="_blank">View</a><a href="http://localhost:3000/delSingle?cmlNum=${key}&fileDocType=${fileKey}">Delete File</a></div></td>`;
                             }
                         }
                     }
