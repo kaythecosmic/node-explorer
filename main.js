@@ -1,11 +1,12 @@
 const { BrowserWindow, app, ipcMain } = require("electron")
 const express = require("express")
-const path = require("node:path")
+const path = require("path")
 const os = require("os")
 const bodyParser = require('body-parser');
 const multer = require('multer')
 const fs = require("fs")
 const ejs = require("ejs")
+const exphbs = require('express-handlebars');
 
 const dbFilePath = "fileList.json"
 
@@ -13,7 +14,7 @@ const PORT = 3000;
 const isMacOS = process.platform === 'darwin';
 const expressApp = express();
 expressApp.engine('html', ejs.renderFile);
-expressApp.use(express.static(path.join(__dirname, "assets")))
+expressApp.use(express.static(path.join(__dirname, "/assets")))
 
 expressApp.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,6 +22,13 @@ expressApp.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
+
+const databaseConfig = {
+    "licenceDocs": "Licence Documents",
+    "correspondence": "Correspondence",
+    "testReports": "Test Reports",
+    "inspectionReport": "Inspection Reports",
+}
 
 const multerStore = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -64,9 +72,10 @@ const uplaodSingle = upload.fields([
     { name: 'single-file', maxCount: 1 },
 ])
 
-expressApp.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/`);
-});
+
+// expressApp.listen(PORT, () => {
+//     console.log(`Server running at http://localhost:${PORT}/`);
+// });
 
 expressApp.get('/', (req, res) => {
     var filepathtable = __dirname + "/renders/table.html";
@@ -162,30 +171,67 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
 });
 
 
-
 expressApp.get('/view/:searchKey?', (req, res) => {
 
+    // console.log(req.params.searchKey);
+    const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+    const searchKey = req.params.searchKey;
+    const keyInfo = searchKey.split('-');
 
-    res.render("./renders/view.html", { hello: 102 })
+    const cmlNumber = keyInfo[0];
+    const fileKey = keyInfo[1];
+    const fileList = fileListData[cmlNumber][fileKey];
+    var viewtableRows = [];
+
+
+    // console.log(fileList);
+
+    for (let url = 0; url < fileList.length; url++) {
+        const urlString = fileList[url];
+        const fileName = urlString.split('/');
+        var orgFileName = fileName[fileName.length - 1].split('-');
+        orgFileName = orgFileName[orgFileName.length - 1];
+        const fileUrl = `file://${app.getAppPath()}/${urlString}`;
+        viewtableRows.push({
+            "filename": orgFileName,
+            "url": fileUrl
+        });
+    }
+
+    const data = {
+        cmlnum: cmlNumber,
+        filekeyNum: databaseConfig[fileKey],
+        tableRows: viewtableRows
+    }
+
+    console.log(data);
+    var filepathView = __dirname + "/renders/view.html";
+    filepathView = filepathView.replaceAll("\\", "/");
+    res.render(filepathView, { data })
 });
 
 expressApp.get('/displayData/:searchKey?', (req, res) => {
-
+    const fileTypes = ["licenceDocs", "correspondence", "testReports", "inspectionReport"];
     try {
         const searchKey = req.params.searchKey || '';
         const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-        let tableHtml = '';
+        let tableHtml = ``;
 
         for (const key in fileListData) {
             if (fileListData.hasOwnProperty(key)) {
                 if (searchKey === '' || key.includes(searchKey)) {
                     const rowData = fileListData[key];
-                    tableHtml += `<tr><td>${key}<button onclick="deleteRow('${key}')"><img src ='${app.getAppPath()}/assets/images/trash-2.svg'></button></td>`;
-                    for (const fileKey in rowData) {
-                        if (rowData.hasOwnProperty(fileKey)) {
+                    tableHtml += `
+                    <tr><td>${key}<button onclick="deleteRow('${key}')"><img src ='${app.getAppPath()}/assets/images/trash-2.svg'></button></td>
+                    <td>${rowData.orgName}</td>
+                    <td>${rowData.ISNumber}</td>`;
+
+                    for (const fileKey in fileTypes) {
+                        if (rowData.hasOwnProperty(fileTypes[fileKey])) {
                             const filePath = rowData[fileKey];
                             if (filePath == "") {
-                                tableHtml += `<td>
+                                tableHtml += `
+                                <td>
                                     <form action="http://localhost:3000/addSingle" method="POST" enctype="multipart/form-data">
                                         <label for="${key}-${fileKey}" class= "custom-file-upload-table">Browse</label>
                                         <input type="text" name="cmlNumber" id="cmlNumber" value="${key}-${fileKey}" style="display:none">
@@ -195,8 +241,8 @@ expressApp.get('/displayData/:searchKey?', (req, res) => {
                                     </form>
                                 </td>`;
                             } else {
-                                const fileUrl = `file://${app.getAppPath()}/${filePath}`;
-                                tableHtml += `<td><div class="table-cell-active"><a class="open-link" href="${fileUrl}" target="_blank">Open</a><a href="http://localhost:3000/delSingle?cmlNum=${key}&fileDocType=${fileKey}">Delete File</a></div></td>`;
+                                const fileUrl = `http://localhost:3000/view/${key}-${fileTypes[fileKey]}`;
+                                tableHtml += `<td><div class="table-cell-active"><a class="open-link" href="${fileUrl}">View</a><a href="http://localhost:3000/delSingle?cmlNum=${key}&fileDocType=${fileKey}">Delete File</a></div></td>`;
                             }
                         }
                     }
@@ -297,31 +343,48 @@ The main window displays the Document Explorer app.
 //             webSecurity: false
 //         }
 //     });
-//     // let renderFile = path.join(__dirname, "./renders/index.html")
-//     // mainWindow.loadFile(renderFile);
 //     mainWindow.loadURL(`http://localhost:${PORT}/`);
-
-//     // let renderFile = path.join(__dirname, "./renders/table.html")
-//     // mainWindow.loadFile("./renders/table.html");
 
 //     expressApp.listen(PORT, () => {
 //         console.log(`Server running at http://localhost:${PORT}/`);
 //     });
 // }
+app.on('ready', () => {
+    const mainWindowOptions = {
+        title: "Document Explorer",
+        width: 1600,
+        height: 900,
+        webPreferences: {
+            webSecurity: false
+        }
+    };
 
-// app.whenReady().then(() => {
-//     createWindow();
-// });
 
-// app.on('window-all-closed', () => {
-//     if (!isMacOS) {
-//         app.quit();
-//     }
-// })
+    let mainWindow = new BrowserWindow(mainWindowOptions);
+    mainWindow.loadURL(`http://localhost:${PORT}/`);
 
-// app.on('activate', () => {
-//     if (BrowserWindow.getAllWindows().length === 0) {
-//         createWindow()
-//     }
-// })
+    expressApp.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}/`);
+    });
+    mainWindow.on('closed', () => {
+        mainWindow = null;
+    });
+});
+
+app.whenReady().then(() => {
+    createWindow();
+});
+
+app.on('window-all-closed', () => {
+    if (!isMacOS) {
+        app.quit();
+    }
+})
+
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow()
+    }
+})
+
 

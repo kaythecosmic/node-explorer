@@ -249,14 +249,6 @@ a {
   color: #cc0000;
 }
 
-.open-link {
-  padding: 5px 10px;
-  border-radius: 5px;
-  background-color: var(--green-dark);
-  color: whitesmoke;
-  margin: 5px;
-}
-
 .table-data button {
   margin-left: 10px;
   background: none;
@@ -279,7 +271,7 @@ a {
   border: 1px solid grey;
   border-radius: 2px;
   padding: 10px;
-  background-color: #FAF9F6;
+  background-color: #faf9f6;
   transition: var(--transition);
   outline: none;
 }
@@ -287,3 +279,87 @@ a {
 .search-main:focus {
   box-shadow: var(--shadow-2);
 }
+
+/* view CSS */
+
+.max-widthwrapper {
+  width: 80vw;
+  margin: auto;
+  padding: 10px 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
+
+.view-header {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.view-table {
+  margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.view-table thead th {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.view-table td,
+th {
+  border-top: 1px solid black;
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.action-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-content: center;
+}
+
+.action-button-container button {
+  color: whitesmoke;
+  border: none;
+  background-color: green;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px 10px;
+  border-radius: 4px;
+  transition: var(--transition);
+  width: 30%;
+}
+
+.action-button-container div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.open-link {
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: var(--green-dark);
+  color: whitesmoke;
+}
+
+.view-header .open-link{
+  font-size: 1.3rem;
+} 
+
+.view-header .open-link:nth-child(2){
+  background-color: var(--red-dark);
+} 
+

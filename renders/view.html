@@ -4,21 +4,67 @@
 <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <base href="/">
+    <!-- comment ou when shifting to electron -->
     <meta http-equiv='X-UA-Compatible' content='ie=edge'>
     <title>PorjectTitle</title>
-    <link rel='stylesheet' href='style.css'>
+    <link rel="stylesheet" href="css/table-style.css">
+    <!-- <link rel="stylesheet" href="../assets/css/table-style.css"> -->
 </head>
 
 <body>
-    <!-- type of document -->
-    <h1>{tpe of doc}</h1>
-    <table>
-        <td>
-            <div class="table-cell-active"><a class="open-link" href="${fileUrl}" target="_blank">Open</a><a
-                    href="http://localhost:3000/delSingle?cmlNum=${key}&fileDocType=${fileKey}">Delete File</a></div>
-        </td>
-    </table>
-    <script src='index.js'> { hello }</script>
+    <main class="max-widthwrapper">
+        <div class="view-header">
+            <div class="page-header">
+                <%=data.cmlnum%> - <%=data.filekeyNum%>
+            </div>
+
+            <div class="action-cell">
+                <a href="#" class="open-link" onclick="()=>{addNewRow()}">Add New</a>
+                <a href="/" class="open-link">Go Back</a>
+            </div>
+        </div>
+
+        <table class="view-table">
+            <thead>
+                <th>
+                    S. No
+                </th>
+                <th>
+                    File Name
+                </th>
+                <th>
+                    Actions
+                </th>
+            </thead>
+            <tbody id="table-rows">
+
+                <% for(let i=0 ; i < data.tableRows.length ; i++) { %>
+                    <tr>
+                        <td>
+                            <%= i+1 %>.
+                        </td>
+                        <td>
+                            <%= data.tableRows[i].filename %>
+                        </td>
+                        <td class="actions-cell">
+                            <div class="action-button-container">
+                                <button>Remove</button>
+                                <div>
+                                    <a href=<%=data.tableRows[i].url%> target="_blank" class="open-link">
+                                        View
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <% }%>
+            </tbody>
+        </table>
+    </main>
+
+    <script type="text/javascript">
+    </script>
 </body>
 
 </html>

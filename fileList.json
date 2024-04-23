@@ -1,5 +1,8 @@
 {
   "123456": {
+    "0": "database/123456/single-file/123456-0-single-file-2022.pdf",
+    "orgName": "Google",
+    "ISNumber": 123654789,
     "licenceDocs": [
       "database/123456/licenceDocs/123456-licenceDocs-2017.pdf"
     ],
@@ -14,53 +17,6 @@
       "database/123456/inspectionReport/123456-inspectionReport-2020.pdf",
       "database/123456/inspectionReport/123456-inspectionReport-2021.pdf",
       "database/123456/inspectionReport/123456-inspectionReport-2022.pdf"
-    ]
-  },
-  "dwcdq": {
-    "licenceDocs": [
-      "database/dwcdq/licenceDocs/dwcdq-licenceDocs-2021.pdf"
-    ],
-    "correspondence": [],
-    "testReports": [
-      "database/dwcdq/testReports/dwcdq-testReports-2021.pdf"
-    ],
-    "inspectionReport": [
-      "database/dwcdq/inspectionReport/dwcdq-inspectionReport-2017.pdf",
-      "database/dwcdq/inspectionReport/dwcdq-inspectionReport-2020.pdf",
-      "database/dwcdq/inspectionReport/dwcdq-inspectionReport-2021.pdf",
-      "database/dwcdq/inspectionReport/dwcdq-inspectionReport-2022.pdf"
-    ]
-  },
-  "dqcdwv": {
-    "licenceDocs": [
-      "database/dqcdwv/licenceDocs/dqcdwv-licenceDocs-2022.pdf"
-    ],
-    "correspondence": [],
-    "testReports": [
-      "database/dqcdwv/testReports/dqcdwv-testReports-2022.pdf"
-    ],
-    "inspectionReport": [
-      "database/dqcdwv/inspectionReport/dqcdwv-inspectionReport-2017.pdf",
-      "database/dqcdwv/inspectionReport/dqcdwv-inspectionReport-2020.pdf",
-      "database/dqcdwv/inspectionReport/dqcdwv-inspectionReport-2021.pdf",
-      "database/dqcdwv/inspectionReport/dqcdwv-inspectionReport-2022.pdf"
-    ]
-  },
-  "qcfwc": {
-    "licenceDocs": [
-      "database/qcfwc/licenceDocs/qcfwc-licenceDocs-2021.pdf"
-    ],
-    "correspondence": [
-      "database/qcfwc/correspondence/qcfwc-correspondence-2022.pdf"
-    ],
-    "testReports": [
-      "database/qcfwc/testReports/qcfwc-testReports-2017.pdf"
-    ],
-    "inspectionReport": [
-      "database/qcfwc/inspectionReport/qcfwc-inspectionReport-2017.pdf",
-      "database/qcfwc/inspectionReport/qcfwc-inspectionReport-2020.pdf",
-      "database/qcfwc/inspectionReport/qcfwc-inspectionReport-2021.pdf",
-      "database/qcfwc/inspectionReport/qcfwc-inspectionReport-2022.pdf"
     ]
   }
 }
