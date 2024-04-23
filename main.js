@@ -57,7 +57,11 @@ const multerStore = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         let cmlKey = req.body.cmlNumber;
-        const filename = `${cmlKey}-${file.fieldname}-${file.originalname}`;
+        let fileType = file.fieldname;
+        if (fileType == "single-file") {
+            fileType = cmlKey.split('-')[1];
+        }
+        const filename = `${cmlKey}-${fileType}-${file.originalname}`;
         cb(null, filename)
     }
 })
