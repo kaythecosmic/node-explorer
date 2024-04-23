@@ -58,8 +58,7 @@
             <div class="input-cell">
                 <h3>Inspection Reports</h3>
                 <label for="inspectionReport" class="custom-file-upload">Browse</label>
-                <input type="file" name="inspectionReport" id="inspectionReport" onchange="updateFileName(this)"
-                    multiple>
+                <input type="file" name="inspectionReport" id="inspectionReport" onchange="updateFileName(this)" multiple>
                 <span id="inspectionReport-filename">No File Chosen</span>
             </div>
         </div>
@@ -110,7 +109,6 @@
             // checking the condition to display
             if (input.files.length > 0) {
                 fileName.innerHTML = input.files[0].name.toString();
-                // displaying its submit button
                 submitButton.classList.toggle("btn-hide");
             } else {
                 submitButton.classList.toggle("btn-hide");
