@@ -284,18 +284,66 @@ expressApp.delete('/deleteRow/:key', (req, res) => {
 });
 
 
-expressApp.get('/delSingle', (req, res) => {
+// expressApp.get('/delSingle', (req, res) => {
+
+//     const delCMLKey = req.query.cmlNum;
+//     const delDocType = req.query.fileDocType;
+
+//     console.log((delCMLKey));
+//     console.log((delDocType));
+
+//     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+//     fileListData[delCMLKey][delDocType] = "";
+
+//     const fullFile = JSON.stringify(fileListData, null, 2);
+
+//     fs.writeFile(dbFilePath, fullFile, (err) => {
+//         if (err) {
+//             console.error('\nError 100: While writing a file\n', err);
+//         } else {
+//             console.log('JSON File saved after adding one record.');
+//         }
+//         res.redirect("/")
+//     });
+
+//     // const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+
+//     // console.log(fileListData)
+//     // console.log(fileListData[dbCML][dbDocType])
+//     // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
+//     // console.log(fileListData)
+
+//     // const fullFile = JSON.stringify(fileListData, null, 2);
+
+//     // fs.writeFile(dbFilePath, fullFile, (err) => {
+//     //     if (err) {
+//     //         console.error('\nError 100: While writing a file\n', err);
+//     //     } else {
+//     //         console.log('JSON File saved after adding one record.');
+//     //     }
+//     //     res.redirect("/")
+//     // });
+
+// });
+
+expressApp.get('/removeFile', (req, res) => {
 
     const delCMLKey = req.query.cmlNum;
     const delDocType = req.query.fileDocType;
+    const delDocName = req.query.fileName;
 
-    console.log((delCMLKey));
-    console.log((delDocType));
+    console.log(delCMLKey);
+    console.log(delDocType);
+    console.log(delDocName);
 
     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-    fileListData[delCMLKey][delDocType] = "";
+    const filesArray = fileListData[delCMLKey][delDocType];
 
-    const fullFile = JSON.stringify(fileListData, null, 2);
+    fileListData[delCMLKey][delDocType] = filesArray.filter(filePath => {
+        return !filePath.includes(delDocName);
+    });
+
+    fs.writeFileSync(dbFilePath, JSON.stringify(fileListData, null, 2));
 
     fs.writeFile(dbFilePath, fullFile, (err) => {
         if (err) {
@@ -305,25 +353,6 @@ expressApp.get('/delSingle', (req, res) => {
         }
         res.redirect("/")
     });
-
-    // const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-
-    // console.log(fileListData)
-    // console.log(fileListData[dbCML][dbDocType])
-    // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
-    // console.log(fileListData)
-
-    // const fullFile = JSON.stringify(fileListData, null, 2);
-
-    // fs.writeFile(dbFilePath, fullFile, (err) => {
-    //     if (err) {
-    //         console.error('\nError 100: While writing a file\n', err);
-    //     } else {
-    //         console.log('JSON File saved after adding one record.');
-    //     }
-    //     res.redirect("/")
-    // });
-
 });
 
 

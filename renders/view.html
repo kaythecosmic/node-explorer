@@ -43,13 +43,13 @@
                     <tr>
                         <td>
                             <%= i+1 %>.
-                        </td>
+                        </td> 
                         <td>
                             <%= data.tableRows[i].filename %>
                         </td>
                         <td class="actions-cell">
                             <div class="action-button-container">
-                                <button>Remove</button>
+                                <a href="http://localhost:3000/removeFile?=<%=data.cmlNum%> &fileDocType= <%=data.filekeyNum%>&fileName= <%=data.tableRows[i].filename%>">Delete File</a></div>
                                 <div>
                                     <a href=<%=data.tableRows[i].url%> target="_blank" class="open-link">
                                         View
@@ -64,6 +64,23 @@
     </main>
 
     <script type="text/javascript">
+        function removeFile(button) {
+            const cmlNum = button.getAttribute('data-cmlnum');
+            const fileDocType = button.getAttribute('data-filedoctype');
+            const fileName = button.getAttribute('data-filename');
+
+            fetch(`/removeFile?cmlNum=${cmlNum}&fileDocType=${fileDocType}&fileName=${fileName}`)
+            .then(response => {
+                if (response.ok) {
+                    console.log('File removed successfully');
+                    window.location.href = '/'; 
+                } else {
+                    console.error('Failed to remove file');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     </script>
 </body>
 
