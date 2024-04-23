@@ -15,13 +15,26 @@
 <body>
     <main class="max-widthwrapper">
         <div class="view-header">
-            <div class="page-header">
-                <%=data.cmlnum%> - <%=data.filekeyNum%>
+            <div class="page-title">
+                <a href="/" class="open-link">Go Back</a>
+                <span>
+                    <%=data.cmlnum%> - <%=data.filekeyType%>
+                </span>
             </div>
 
-            <div class="action-cell">
-                <a href="#" class="open-link" onclick="()=>{addNewRow()}">Add New</a>
-                <a href="/" class="open-link">Go Back</a>
+            <div class="view-header-buttons"> 
+                <form action="http://localhost:3000/addSingle" method="POST" enctype="multipart/form-data">
+                    <input id="<%=data.filekey%>-submit-btn" type="submit" value="Add"
+                        class="custom-file-upload-table table-submit-btn btn-hide">
+                    <div class="input-cell">
+                        <input type="text" name="cmlNumber" id="cmlNumber" value="<%=data.cmlnum%>-<%=data.filekey%>"
+                            style="display:none">
+                        <label for="<%=data.filekey%>" class="custom-file-upload">Browse</label>
+                        <input type="file" name="single-file" id="<%=data.filekey%>"
+                            onchange="updateFileName(this)" multiple>
+                        <span id="<%=data.filekey%>-filename">No File Chosen</span>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -64,6 +77,24 @@
     </main>
 
     <script type="text/javascript">
+
+        function updateFileName(input) {
+            // getting the displayspan
+            var fileNameDisplayID = input.id + "-filename"
+            var fileName = document.getElementById(fileNameDisplayID);
+            var submitButton = document.getElementById(input.id + "-submit-btn");
+
+            // checking the condition to display
+            if (input.files.length > 0) {
+                fileName.style.color = "green";
+                fileName.innerHTML = input.files.length + " file(s) chosen";
+                // displaying its submit button
+                submitButton.classList.toggle("btn-hide");
+            } else {
+                submitButton.classList.toggle("btn-hide");
+                fileName.textContent = '';
+            }
+        }
     </script>
 </body>
 

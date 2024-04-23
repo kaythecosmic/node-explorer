@@ -355,11 +355,35 @@ th {
   color: whitesmoke;
 }
 
-.view-header .open-link{
+.view-header .open-link {
   font-size: 1.3rem;
-} 
+}
 
-.view-header .open-link:nth-child(2){
+.view-header-buttons {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-title {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+}
+.page-title .open-link {
   background-color: var(--red-dark);
-} 
+}
 
+.view-header-buttons form {
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 2rem;
+}
+
+.view-header-buttons form input[type="submit"] {
+  padding: 10px 30px;
+}

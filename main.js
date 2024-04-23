@@ -36,6 +36,9 @@ const multerStore = multer.diskStorage({
         let fileType = file.fieldname;
         let keyOnlyNumber = cmlKey.split('-')[0]
         let keyLocation = `database/${keyOnlyNumber}`;
+        if (fileType == "single-file") {
+            fileType = cmlKey.split('-')[1];
+        }
         let fileLocation = `database/${keyOnlyNumber}/${fileType}`;
         try {
             if (!fs.existsSync(keyLocation)) {
@@ -69,7 +72,7 @@ const uploadList = upload.fields([
 ])
 
 const uplaodSingle = upload.fields([
-    { name: 'single-file', maxCount: 1 },
+    { name: 'single-file' },
 ])
 
 
@@ -155,19 +158,28 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
     const dbDocType = fileKeyPair[1];
 
     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-    fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
+    
+    // console.log("allFiles['single-file']");
+    // console.log(allFiles["single-file"]);
+    const uploadedFilesCount = allFiles["single-file"].length;
+    // console.log("fileListData[dbCML][dbDocType]");
+    // console.log(fileListData[dbCML][dbDocType]);
+
+    for (let newURLIdx = 0; newURLIdx < uploadedFilesCount; newURLIdx++) { 
+        fileListData[dbCML][dbDocType].push(allFiles["single-file"][newURLIdx].path.replaceAll("\\", "/"))
+    }
+    // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
 
     const fullFile = JSON.stringify(fileListData, null, 2);
-
     fs.writeFile(dbFilePath, fullFile, (err) => {
         if (err) {
             console.error('\nError 100: While writing a file\n', err);
         } else {
             console.log('JSON File saved after adding one record.');
         }
-        res.redirect("/")
+        // console.log(`/view/${dbCML}-${dbDocType}`);
+        res.redirect(`/view/${dbCML}-${dbDocType}`)
     });
-
 });
 
 
@@ -200,7 +212,8 @@ expressApp.get('/view/:searchKey?', (req, res) => {
 
     const data = {
         cmlnum: cmlNumber,
-        filekeyNum: databaseConfig[fileKey],
+        filekey: fileKey,
+        filekeyType: databaseConfig[fileKey],
         tableRows: viewtableRows
     }
 
