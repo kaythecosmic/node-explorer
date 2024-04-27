@@ -60,6 +60,7 @@ const multerStore = multer.diskStorage({
         let fileType = file.fieldname;
         if (fileType == "single-file") {
             fileType = cmlKey.split('-')[1];
+            cmlKey = cmlKey.split('-')[0];
         }
         const filename = `${cmlKey}-${fileType}-${file.originalname}`;
         cb(null, filename)
@@ -90,7 +91,7 @@ expressApp.get('/', (req, res) => {
     res.render(filepathtable)
 });
 
-/* =============== Documentation Object ===============
+/**
 >> function expressApp.post(): Params { '/addNew', (req, res) }
 Endpoint: '/addNew'
 Handles POST requests, logs form data, and redirects to a new page.
@@ -102,11 +103,15 @@ Params
 expressApp.post('/addNew', uploadList, (req, res) => {
 
     const newCMLKey = req.body.cmlNumber;
+    const inputOrgName = req.body.orgName;
+    const inputISNumber = req.body.ISNumber;
     const allFiles = req.files;
 
     // save the record in the json file
     const newRecord = {
         [newCMLKey.toString()]: {
+            "orgName": inputOrgName,
+            "ISNumber": inputISNumber,
             "licenceDocs": [],
             "correspondence": [],
             "testReports": [],
@@ -162,14 +167,14 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
     const dbDocType = fileKeyPair[1];
 
     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-    
+
     // console.log("allFiles['single-file']");
     // console.log(allFiles["single-file"]);
     const uploadedFilesCount = allFiles["single-file"].length;
     // console.log("fileListData[dbCML][dbDocType]");
     // console.log(fileListData[dbCML][dbDocType]);
 
-    for (let newURLIdx = 0; newURLIdx < uploadedFilesCount; newURLIdx++) { 
+    for (let newURLIdx = 0; newURLIdx < uploadedFilesCount; newURLIdx++) {
         fileListData[dbCML][dbDocType].push(allFiles["single-file"][newURLIdx].path.replaceAll("\\", "/"))
     }
     // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
@@ -239,7 +244,7 @@ expressApp.get('/displayData/:searchKey?', (req, res) => {
                 if (searchKey === '' || key.includes(searchKey)) {
                     const rowData = fileListData[key];
                     tableHtml += `
-                    <tr><td>${key}<button onclick="deleteRow('${key}')"><img src ='${app.getAppPath()}/assets/images/trash-2.svg'></button></td>
+                    <tr><td>${key}<button onclick="deleteRow('${key}')"><img src ='/images/trash-2.svg'></button></td>
                     <td>${rowData.orgName}</td>
                     <td>${rowData.ISNumber}</td>`;
 
@@ -259,7 +264,7 @@ expressApp.get('/displayData/:searchKey?', (req, res) => {
                                 </td>`;
                             } else {
                                 const fileUrl = `http://localhost:3000/view/${key}-${fileTypes[fileKey]}`;
-                                tableHtml += `<td><div class="table-cell-active"><a class="open-link" href="${fileUrl}">View</a><a href="http://localhost:3000/delSingle?cmlNum=${key}&fileDocType=${fileKey}">Delete File</a></div></td>`;
+                                tableHtml += `<td><div class="table-cell-active"><a class="open-link" href="${fileUrl}">View</a></div></td>`;
                             }
                         }
                     }
@@ -300,17 +305,68 @@ expressApp.delete('/deleteRow/:key', (req, res) => {
     }
 });
 
+// expressApp.get('/delSingle/:fileID', (req, res) => {
 
-expressApp.get('/delSingle', (req, res) => {
+//     const delCMLKey = req.query.cmlNum;
+//     const delDocType = req.query.fileDocType;
 
-    const delCMLKey = req.query.cmlNum;
-    const delDocType = req.query.fileDocType;
+//     console.log((delCMLKey));
+//     console.log((delDocType));
 
-    console.log((delCMLKey));
-    console.log((delDocType));
+//     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+//     fileListData[delCMLKey][delDocType] = "";
+
+//     const fullFile = JSON.stringify(fileListData, null, 2);
+
+//     fs.writeFile(dbFilePath, fullFile, (err) => {
+//         if (err) {
+//             console.error('\nError 100: While writing a file\n', err);
+//         } else {
+//             console.log('JSON File saved after adding one record.');
+//         }
+//         res.redirect("/")
+//     });
+
+//     // const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+
+//     // console.log(fileListData)
+//     // console.log(fileListData[dbCML][dbDocType])
+//     // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
+//     // console.log(fileListData)
+
+//     // const fullFile = JSON.stringify(fileListData, null, 2);
+
+//     // fs.writeFile(dbFilePath, fullFile, (err) => {
+//     //     if (err) {
+//     //         console.error('\nError 100: While writing a file\n', err);
+//     //     } else {
+//     //         console.log('JSON File saved after adding one record.');
+//     //     }
+//     //     res.redirect("/")
+//     // });
+
+// });
+
+expressApp.get('/delSingle/:fileID', (req, res) => {
+
+    const fullParamterList = req.params.fileID.split('-');
+
+    const delCMLKey = fullParamterList[0];
+    const delFileType = fullParamterList[1];
+    const delFileName = fullParamterList[2];
+    // database/123456/licenceDocs/123456-licenceDocs-2017.pdf
+    const delFileURL = `database/${delCMLKey}/${delFileType}/${delCMLKey}-${delFileType}-${delFileName}`
+
+    const filePathToDelete = path.join(app.getAppPath(), delFileURL);
+    // console.log(filePathToDelete);
+    fs.unlinkSync(filePathToDelete);
 
     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-    fileListData[delCMLKey][delDocType] = "";
+    filesArray = fileListData[delCMLKey][delFileType];
+
+    fileListData[delCMLKey][delFileType] = filesArray.filter(filePath => {
+        return !filePath.includes(delFileName);
+    });
 
     const fullFile = JSON.stringify(fileListData, null, 2);
 
@@ -320,9 +376,9 @@ expressApp.get('/delSingle', (req, res) => {
         } else {
             console.log('JSON File saved after adding one record.');
         }
-        res.redirect("/")
     });
 
+    // res.redirect("/")
     // const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
 
     // console.log(fileListData)
@@ -342,6 +398,7 @@ expressApp.get('/delSingle', (req, res) => {
     // });
 
 });
+
 
 
 
@@ -388,9 +445,9 @@ app.on('ready', () => {
     });
 });
 
-app.whenReady().then(() => {
-    createWindow();
-});
+// app.whenReady().then(() => {
+//     createWindow();
+// });
 
 app.on('window-all-closed', () => {
     if (!isMacOS) {

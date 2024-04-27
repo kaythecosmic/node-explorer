@@ -22,7 +22,7 @@
                 </span>
             </div>
 
-            <div class="view-header-buttons"> 
+            <div class="view-header-buttons">
                 <form action="http://localhost:3000/addSingle" method="POST" enctype="multipart/form-data">
                     <input id="<%=data.filekey%>-submit-btn" type="submit" value="Add"
                         class="custom-file-upload-table table-submit-btn btn-hide">
@@ -30,8 +30,8 @@
                         <input type="text" name="cmlNumber" id="cmlNumber" value="<%=data.cmlnum%>-<%=data.filekey%>"
                             style="display:none">
                         <label for="<%=data.filekey%>" class="custom-file-upload">Browse</label>
-                        <input type="file" name="single-file" id="<%=data.filekey%>"
-                            onchange="updateFileName(this)" multiple>
+                        <input type="file" name="single-file" id="<%=data.filekey%>" onchange="updateFileName(this)"
+                            multiple>
                         <span id="<%=data.filekey%>-filename">No File Chosen</span>
                     </div>
                 </form>
@@ -62,7 +62,12 @@
                         </td>
                         <td class="actions-cell">
                             <div class="action-button-container">
-                                <button>Remove</button>
+                                <div>
+                                    <a href="/delSingle/<%=data.cmlnum%>-<%=data.filekey%>-<%=data.tableRows[i].filename%>"
+                                        class="open-link">
+                                        Remove
+                                    </a>
+                                </div>
                                 <div>
                                     <a href=<%=data.tableRows[i].url%> target="_blank" class="open-link">
                                         View
