@@ -212,7 +212,9 @@ expressApp.get('/view/:searchKey?', (req, res) => {
         const fileName = urlString.split('/');
         var orgFileName = fileName[fileName.length - 1].split('-');
         orgFileName = orgFileName[orgFileName.length - 1];
-        const fileUrl = `file://${app.getAppPath()}/${urlString}`;
+        let fileUrl = `file://${app.getAppPath()}/${urlString}`;
+        fileUrl=fileUrl.replaceAll("\\", "/");
+        fileUrl=fileUrl.replaceAll(" ", "%20");
         viewtableRows.push({
             "filename": orgFileName,
             "url": fileUrl
