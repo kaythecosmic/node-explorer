@@ -8,7 +8,7 @@ const fs = require("fs")
 const ejs = require("ejs")
 const exphbs = require('express-handlebars');
 
-const dbFilePath = "fileList.json"
+const dbFilePath = "resources/app/fileList.json"
 
 const PORT = 3000;
 const isMacOS = process.platform === 'darwin';
@@ -35,11 +35,12 @@ const multerStore = multer.diskStorage({
         let cmlKey = req.body.cmlNumber;
         let fileType = file.fieldname;
         let keyOnlyNumber = cmlKey.split('-')[0]
-        let keyLocation = `database/${keyOnlyNumber}`;
+        let keyLocation = `resources/app/database/${keyOnlyNumber}`;
+
         if (fileType == "single-file") {
             fileType = cmlKey.split('-')[1];
         }
-        let fileLocation = `database/${keyOnlyNumber}/${fileType}`;
+        let fileLocation = `resources/app/database/${keyOnlyNumber}/${fileType}`;
         try {
             if (!fs.existsSync(keyLocation)) {
                 fs.mkdirSync(keyLocation);
@@ -131,10 +132,11 @@ expressApp.post('/addNew', uploadList, (req, res) => {
     try {
         const data = fs.readFileSync(dbFilePath, 'utf8');
         const fileList = JSON.parse(data);
-        let combined = { ...fileList, ...newRecord }
+        
+        let combined = JSON.stringify({ ...fileList, ...newRecord }, null, 2)
+        combined = combined.replaceAll("resources/app/", "");
 
-        const jsonData = JSON.stringify(combined, null, 2);
-        fs.writeFile(dbFilePath, jsonData, (err) => {
+        fs.writeFile(dbFilePath, combined, (err) => {
             if (err) {
                 console.error('Error writing file:', err);
             } else {
@@ -142,7 +144,8 @@ expressApp.post('/addNew', uploadList, (req, res) => {
             }
         });
     } catch (error) {
-        const newRecordPush = JSON.stringify(newRecord, null, 2);
+        let newRecordPush = JSON.stringify(newRecord, null, 2);
+        newRecordPush = newRecordPush.replaceAll("resources/app/", "");
         fs.writeFile(dbFilePath, newRecordPush, (err) => {
             if (err) {
                 console.error('Error writing file:', err);
@@ -179,7 +182,8 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
     }
     // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
 
-    const fullFile = JSON.stringify(fileListData, null, 2);
+    let fullFile = JSON.stringify(fileListData, null, 2);
+    	fullFile=fullFile.replaceAll("resources/app/", "");
     fs.writeFile(dbFilePath, fullFile, (err) => {
         if (err) {
             console.error('\nError 100: While writing a file\n', err);
@@ -237,13 +241,18 @@ expressApp.get('/view/:searchKey?', (req, res) => {
 expressApp.get('/displayData/:searchKey?', (req, res) => {
     const fileTypes = ["licenceDocs", "correspondence", "testReports", "inspectionReport"];
     try {
-        const searchKey = req.params.searchKey || '';
+        let searchKey
+            if (!req.params.searchKey){
+                searchKey = '';
+            }
+            else{
+                searchKey = req.params.searchKey.replaceAll("*","/").replaceAll("^","\\").replaceAll("|","%");
+            }
         const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
         let tableHtml = ``;
-
         for (const key in fileListData) {
             if (fileListData.hasOwnProperty(key)) {
-                if (searchKey === '' || key.includes(searchKey)) {
+                if (searchKey === '' || key.includes(searchKey) || fileListData[key].orgName.includes(searchKey) || fileListData[key].ISNumber.includes(searchKey)) {
                     const rowData = fileListData[key];
                     tableHtml += `
                     <tr><td>${key}<button onclick="deleteRow('${key}')"><img src ='/images/trash-2.svg'></button></td>
@@ -305,6 +314,7 @@ expressApp.delete('/deleteRow/:key', (req, res) => {
         console.error('Error deleting row:', error.message);
         res.status(500).send('Internal Server Error');
     }
+    res.redirect("/")
 });
 
 // expressApp.get('/delSingle/:fileID', (req, res) => {
@@ -379,6 +389,7 @@ expressApp.get('/delSingle/:fileID', (req, res) => {
             console.log('JSON File saved after adding one record.');
         }
     });
+    res.redirect(`/view/${delCMLKey}-${delFileType}`)
 
     // res.redirect("/")
     // const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <base href="/"> -->
     <link rel="stylesheet" href="css/table-style.css">
-    <link rel="stylesheet" href="../assets/css/table-style.css">
     <title>Explorer | Main</title>
 </head>
 
@@ -15,17 +14,17 @@
         <div class="form-elements-container">
             <div class="input-cell">
                 <h3>CM/L Number *</h3>
-                <input type="text" name="cmlNumber" id="cmlNumber">
+                <input type="number" name="cmlNumber" id="cmlNumber" required>
             </div>
 
             <div class="input-cell">
                 <h3>Organization Name *</h3>
-                <input type="text" name="orgName" id="orgName">
+                <input type="text" name="orgName" id="orgName" required>
             </div>
 
             <div class="input-cell">
                 <h3>IS. No. *</h3>
-                <input type="text" name="ISNumber" id="ISNumber">
+                <input type="text" name="ISNumber" id="ISNumber" required>
             </div>
             <div class="input-cell">
                 <input type="submit" value="Add New Record" class="table-submit-btn">
@@ -93,7 +92,7 @@
             var fileName = document.getElementById(fileNameDisplayID);
             if (input.files.length > 0) {
                 fileName.style.color = "green";
-                fileName.innerHTML = input.files[0].name.toString();
+                fileName.innerHTML = input.files.length + " file(s) chosen";
             } else {
                 fileName.style.color = "red";
                 fileName.textContent = 'No File Chosen';
@@ -145,7 +144,19 @@
 
 
         async function searchData() {
-            const searchKey = document.getElementById('searchInput').value.trim();
+            console.log(document.getElementById('searchInput').value.trim());
+            console.log(typeof(document.getElementById('searchInput').value));
+            let searchKey = ''
+            
+            if (document.getElementById('searchInput').value.trim() == '' ){
+                searchKey = document.getElementById('searchInput').value.trim();
+                console.log('1');
+            }
+            else{
+                searchKey = document.getElementById('searchInput').value.trim().replaceAll("/","*").replaceAll("\\","^").replaceAll("%","|");
+                console.log('2');
+            }
+            console.log(searchKey);
             const response = await fetch(`http://localhost:3000/displayData/${searchKey}`)
                 .then(response => response.text())
                 .then(data => {

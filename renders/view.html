@@ -94,7 +94,8 @@
                 fileName.style.color = "green";
                 fileName.innerHTML = input.files.length + " file(s) chosen";
                 // displaying its submit button
-                submitButton.classList.toggle("btn-hide");
+                if (submitButton.classList.contains("btn-hide"))
+                    submitButton.classList.toggle("btn-hide");
             } else {
                 submitButton.classList.toggle("btn-hide");
                 fileName.textContent = '';
