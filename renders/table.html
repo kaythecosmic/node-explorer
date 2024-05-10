@@ -153,7 +153,7 @@
                 console.log('1');
             }
             else{
-                searchKey = document.getElementById('searchInput').value.trim().replaceAll("/","*").replaceAll("\\","^").replaceAll("%","|");
+                searchKey = encodeURIComponent(document.getElementById('searchInput').value.trim().replaceAll("%","|"));
                 console.log('2');
             }
             console.log(searchKey);

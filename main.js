@@ -246,7 +246,7 @@ expressApp.get('/displayData/:searchKey?', (req, res) => {
                 searchKey = '';
             }
             else{
-                searchKey = req.params.searchKey.replaceAll("*","/").replaceAll("^","\\").replaceAll("|","%");
+                searchKey = decodeURIComponent(req.params.searchKey).replaceAll("|","%");
             }
         const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
         let tableHtml = ``;
