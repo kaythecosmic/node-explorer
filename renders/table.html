@@ -145,15 +145,15 @@
 
         async function searchData() {
             console.log(document.getElementById('searchInput').value.trim());
-            console.log(typeof(document.getElementById('searchInput').value));
+            console.log(typeof (document.getElementById('searchInput').value));
             let searchKey = ''
-            
-            if (document.getElementById('searchInput').value.trim() == '' ){
+
+            if (document.getElementById('searchInput').value.trim() == '') {
                 searchKey = document.getElementById('searchInput').value.trim();
                 console.log('1');
             }
-            else{
-                searchKey = encodeURIComponent(document.getElementById('searchInput').value.trim().replaceAll("%","|"));
+            else {
+                searchKey = encodeURIComponent(document.getElementById('searchInput').value.trim().replaceAll("%", "|"));
                 console.log('2');
             }
             console.log(searchKey);

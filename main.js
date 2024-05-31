@@ -1,14 +1,33 @@
-const { BrowserWindow, app, ipcMain } = require("electron")
+const { BrowserWindow, app } = require("electron")
 const express = require("express")
 const path = require("path")
 const os = require("os")
-const bodyParser = require('body-parser');
 const multer = require('multer')
 const fs = require("fs")
 const ejs = require("ejs")
-const exphbs = require('express-handlebars');
+const dbFilePath = "fileList.json"
 
-const dbFilePath = "resources/app/fileList.json"
+
+// Creating the database file if not present
+fs.access(dbFilePath, fs.constants.F_OK, (err) => {
+    if (err) {
+        fs.writeFile(dbFilePath, '', (err) => {
+            if (err) throw err;
+            fs.writeFile(dbFilePath, JSON.stringify({}, null, 2), (err) => {
+                if (err) {
+                    console.error('Error Initializing fileList.json: ', err);
+                } else {
+                    console.log('No Database file found. Created one at "./fileList.json"');
+                }
+            });
+        });
+    } else {
+        console.log('File exists');
+    }
+});
+
+// Creating the database folder if not present
+!fs.existsSync("database") ? fs.mkdirSync("database") : undefined
 
 const PORT = 3000;
 const isMacOS = process.platform === 'darwin';
@@ -102,7 +121,6 @@ Params
 */
 
 expressApp.post('/addNew', uploadList, (req, res) => {
-
     const newCMLKey = req.body.cmlNumber;
     const inputOrgName = req.body.orgName;
     const inputISNumber = req.body.ISNumber;
@@ -132,7 +150,7 @@ expressApp.post('/addNew', uploadList, (req, res) => {
     try {
         const data = fs.readFileSync(dbFilePath, 'utf8');
         const fileList = JSON.parse(data);
-        
+
         let combined = JSON.stringify({ ...fileList, ...newRecord }, null, 2)
         combined = combined.replaceAll("resources/app/", "");
 
@@ -183,7 +201,7 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
     // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
 
     let fullFile = JSON.stringify(fileListData, null, 2);
-    	fullFile=fullFile.replaceAll("resources/app/", "");
+    fullFile = fullFile.replaceAll("resources/app/", "");
     fs.writeFile(dbFilePath, fullFile, (err) => {
         if (err) {
             console.error('\nError 100: While writing a file\n', err);
@@ -217,8 +235,8 @@ expressApp.get('/view/:searchKey?', (req, res) => {
         var orgFileName = fileName[fileName.length - 1].split('-');
         orgFileName = orgFileName[orgFileName.length - 1];
         let fileUrl = `file://${app.getAppPath()}/${urlString}`;
-        fileUrl=fileUrl.replaceAll("\\", "/");
-        fileUrl=fileUrl.replaceAll(" ", "%20");
+        fileUrl = fileUrl.replaceAll("\\", "/");
+        fileUrl = fileUrl.replaceAll(" ", "%20");
         viewtableRows.push({
             "filename": orgFileName,
             "url": fileUrl
@@ -242,12 +260,12 @@ expressApp.get('/displayData/:searchKey?', (req, res) => {
     const fileTypes = ["licenceDocs", "correspondence", "testReports", "inspectionReport"];
     try {
         let searchKey
-            if (!req.params.searchKey){
-                searchKey = '';
-            }
-            else{
-                searchKey = decodeURIComponent(req.params.searchKey).replaceAll("|","%");
-            }
+        if (!req.params.searchKey) {
+            searchKey = '';
+        }
+        else {
+            searchKey = decodeURIComponent(req.params.searchKey).replaceAll("|", "%");
+        }
         const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
         let tableHtml = ``;
         for (const key in fileListData) {
