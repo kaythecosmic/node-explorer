@@ -26,6 +26,7 @@ fs.access(dbFilePath, fs.constants.F_OK, (err) => {
     }
 });
 
+
 // Creating the database folder if not present
 !fs.existsSync(dbPath) ? fs.mkdirSync(dbPath) : undefined
 
@@ -115,24 +116,12 @@ const uplaodSingle = upload.fields([
     { name: 'single-file' },
 ])
 
-// expressApp.listen(PORT, () => {
-//     console.log(`Server running at http://localhost:${PORT}/`);
-// });
-
 expressApp.get('/', (req, res) => {
     var filepathtable = __dirname + "/renders/table.html";
     filepathtable = filepathtable.replaceAll("\\", "/");
     res.render(filepathtable)
 });
 
-/**
->> function expressApp.post(): Params { '/addNew', (req, res) }
-Endpoint: '/addNew'
-Handles POST requests, logs form data, and redirects to a new page.
-Params
-    req - request object,
-    res - response object
-*/
 expressApp.post('/addNew', uploadList, (req, res) => {
     const newCMLKey = req.body.cmlNumber;
     const inputOrgName = req.body.orgName;
@@ -220,7 +209,6 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
 
 expressApp.get('/view/:searchKey?', (req, res) => {
 
-    // console.log(req.params.searchKey);
     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
     const searchKey = req.params.searchKey;
     const keyInfo = searchKey.split('-');
@@ -229,9 +217,6 @@ expressApp.get('/view/:searchKey?', (req, res) => {
     const fileKey = keyInfo[1];
     const fileList = fileListData[cmlNumber][fileKey];
     var viewtableRows = [];
-
-
-    // console.log(fileList);
 
     for (let url = 0; url < fileList.length; url++) {
         const urlString = fileList[url];
@@ -339,48 +324,6 @@ expressApp.delete('/deleteRow/:key', (req, res) => {
     res.redirect("/")
 });
 
-// expressApp.get('/delSingle/:fileID', (req, res) => {
-
-//     const delCMLKey = req.query.cmlNum;
-//     const delDocType = req.query.fileDocType;
-
-//     console.log((delCMLKey));
-//     console.log((delDocType));
-
-//     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-//     fileListData[delCMLKey][delDocType] = "";
-
-//     const fullFile = JSON.stringify(fileListData, null, 2);
-
-//     fs.writeFile(dbFilePath, fullFile, (err) => {
-//         if (err) {
-//             console.error('\nError 100: While writing a file\n', err);
-//         } else {
-//             console.log('JSON File saved after adding one record.');
-//         }
-//         res.redirect("/")
-//     });
-
-//     // const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-
-//     // console.log(fileListData)
-//     // console.log(fileListData[dbCML][dbDocType])
-//     // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
-//     // console.log(fileListData)
-
-//     // const fullFile = JSON.stringify(fileListData, null, 2);
-
-//     // fs.writeFile(dbFilePath, fullFile, (err) => {
-//     //     if (err) {
-//     //         console.error('\nError 100: While writing a file\n', err);
-//     //     } else {
-//     //         console.log('JSON File saved after adding one record.');
-//     //     }
-//     //     res.redirect("/")
-//     // });
-
-// });
-
 expressApp.get('/delSingle/:fileID', (req, res) => {
 
     const fullParamterList = req.params.fileID.split('-');
@@ -388,11 +331,9 @@ expressApp.get('/delSingle/:fileID', (req, res) => {
     const delCMLKey = fullParamterList[0];
     const delFileType = fullParamterList[1];
     const delFileName = fullParamterList[2];
-    // database/123456/licenceDocs/123456-licenceDocs-2017.pdf
     const delFileURL = `database/${delCMLKey}/${delFileType}/${delCMLKey}-${delFileType}-${delFileName}`
 
     const filePathToDelete = path.join(app.getAppPath(), delFileURL);
-    // console.log(filePathToDelete);
     fs.unlinkSync(filePathToDelete);
 
     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
@@ -413,51 +354,8 @@ expressApp.get('/delSingle/:fileID', (req, res) => {
     });
     res.redirect(`/view/${delCMLKey}-${delFileType}`)
 
-    // res.redirect("/")
-    // const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-
-    // console.log(fileListData)
-    // console.log(fileListData[dbCML][dbDocType])
-    // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
-    // console.log(fileListData)
-
-    // const fullFile = JSON.stringify(fileListData, null, 2);
-
-    // fs.writeFile(dbFilePath, fullFile, (err) => {
-    //     if (err) {
-    //         console.error('\nError 100: While writing a file\n', err);
-    //     } else {
-    //         console.log('JSON File saved after adding one record.');
-    //     }
-    //     res.redirect("/")
-    // });
-
 });
 
-
-
-
-// Begin the electron code
-/* =============== Documentation Object ===============
->> function createWindow(): Params { None }
-Function to create the main window and start the Express server.
-The main window displays the Document Explorer app.
-// */
-// function createWindow() {
-//     const mainWindow = new BrowserWindow({
-//         title: "Document Explorer",
-//         width: 1600,
-//         height: 900,
-//         webPreferences: {
-//             webSecurity: false
-//         }
-//     });
-//     mainWindow.loadURL(`http://localhost:${PORT}/`);
-
-//     expressApp.listen(PORT, () => {
-//         console.log(`Server running at http://localhost:${PORT}/`);
-//     });
-// }
 app.on('ready', () => {
     const mainWindowOptions = {
         title: "Document Explorer",
@@ -467,8 +365,6 @@ app.on('ready', () => {
             webSecurity: false
         }
     };
-
-
     let mainWindow = new BrowserWindow(mainWindowOptions);
     mainWindow.removeMenu();
     mainWindow.loadURL(`http://localhost:${PORT}/`);
@@ -480,11 +376,6 @@ app.on('ready', () => {
         mainWindow = null;
     });
 });
-// app.whenReady().then(() => {
-//     createWindow();
-// });
-
-
 
 app.on('window-all-closed', () => {
     if (!isMacOS) {
