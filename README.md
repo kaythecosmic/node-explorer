@@ -1,4 +1,4 @@
-# Node Explorer Documentation
+# Node File Explorer
 
 ## Introduction
 
