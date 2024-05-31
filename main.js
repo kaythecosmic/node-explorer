@@ -5,7 +5,8 @@ const os = require("os")
 const multer = require('multer')
 const fs = require("fs")
 const ejs = require("ejs")
-const dbFilePath = "fileList.json"
+const dbFilePath = "resources/app/fileList.json"
+const dbPath = "resources/app/database"
 
 
 // Creating the database file if not present
@@ -27,7 +28,7 @@ fs.access(dbFilePath, fs.constants.F_OK, (err) => {
 });
 
 // Creating the database folder if not present
-!fs.existsSync("database") ? fs.mkdirSync("database") : undefined
+!fs.existsSync(dbPath) ? fs.mkdirSync(dbPath) : undefined
 
 const PORT = 3000;
 const isMacOS = process.platform === 'darwin';
@@ -41,12 +42,25 @@ expressApp.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
-
 const databaseConfig = {
     "licenceDocs": "Licence Documents",
     "correspondence": "Correspondence",
     "testReports": "Test Reports",
     "inspectionReport": "Inspection Reports",
+}
+
+const generateUniqueFilename = (directory, filename) => {
+    let base = path.basename(filename, path.extname(filename));
+    let ext = path.extname(filename);
+    let counter = 1;
+    let newFilename = filename;
+    
+    while (fs.existsSync(path.join(directory, newFilename))) {
+        newFilename = `${base} (${counter})${ext}`;
+        counter++;
+    }
+    
+    return newFilename;
 }
 
 const multerStore = multer.diskStorage({
@@ -82,8 +96,10 @@ const multerStore = multer.diskStorage({
             fileType = cmlKey.split('-')[1];
             cmlKey = cmlKey.split('-')[0];
         }
-        const filename = `${cmlKey}-${fileType}-${file.originalname}`;
-        cb(null, filename)
+        let fileLocation = `resources/app/database/${cmlKey}/${fileType}`;
+        let filename = `${cmlKey}-${fileType}-${file.originalname}`;
+        filename = generateUniqueFilename(fileLocation, filename);
+        cb(null, filename);
     }
 })
 
@@ -99,7 +115,6 @@ const uploadList = upload.fields([
 const uplaodSingle = upload.fields([
     { name: 'single-file' },
 ])
-
 
 // expressApp.listen(PORT, () => {
 //     console.log(`Server running at http://localhost:${PORT}/`);
@@ -126,7 +141,6 @@ expressApp.post('/addNew', uploadList, (req, res) => {
     const inputISNumber = req.body.ISNumber;
     const allFiles = req.files;
 
-    // save the record in the json file
     const newRecord = {
         [newCMLKey.toString()]: {
             "orgName": inputOrgName,
@@ -178,7 +192,6 @@ expressApp.post('/addNew', uploadList, (req, res) => {
     };
 });
 
-
 expressApp.post('/addSingle', uplaodSingle, (req, res) => {
     const newCMLKey = req.body.cmlNumber;
     const allFiles = req.files;
@@ -188,17 +201,11 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
     const dbDocType = fileKeyPair[1];
 
     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
-
-    // console.log("allFiles['single-file']");
-    // console.log(allFiles["single-file"]);
     const uploadedFilesCount = allFiles["single-file"].length;
-    // console.log("fileListData[dbCML][dbDocType]");
-    // console.log(fileListData[dbCML][dbDocType]);
 
     for (let newURLIdx = 0; newURLIdx < uploadedFilesCount; newURLIdx++) {
         fileListData[dbCML][dbDocType].push(allFiles["single-file"][newURLIdx].path.replaceAll("\\", "/"))
     }
-    // fileListData[dbCML][dbDocType] = allFiles["single-file"][0].path.replaceAll("\\", "/");
 
     let fullFile = JSON.stringify(fileListData, null, 2);
     fullFile = fullFile.replaceAll("resources/app/", "");
@@ -208,7 +215,6 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
         } else {
             console.log('JSON File saved after adding one record.');
         }
-        // console.log(`/view/${dbCML}-${dbDocType}`);
         res.redirect(`/view/${dbCML}-${dbDocType}`)
     });
 });
@@ -491,5 +497,3 @@ app.on('activate', () => {
         createWindow()
     }
 })
-
-
