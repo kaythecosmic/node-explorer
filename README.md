@@ -37,10 +37,7 @@ Node Explorer is a web application designed to explore and visualize the node st
 
 ## Usage
 1. Start the application:
-    ```sh
-    npm start
-    ```
-2. Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
+    open the BIS Explore.exe application
 
 ## Project Structure
 - `assets/`: Contains image and other static assets.
