@@ -1,12 +1,11 @@
 const { BrowserWindow, app } = require("electron")
 const express = require("express")
 const path = require("path")
-const os = require("os")
 const multer = require('multer')
 const fs = require("fs")
 const ejs = require("ejs")
-const dbFilePath = "fileList.json"
-
+const dbFilePath = "resources/app/fileList.json"
+const dbPath = "resources/app/database"
 
 // Creating the database file if not present
 fs.access(dbFilePath, fs.constants.F_OK, (err) => {
@@ -27,7 +26,7 @@ fs.access(dbFilePath, fs.constants.F_OK, (err) => {
 });
 
 // Creating the database folder if not present
-!fs.existsSync("database") ? fs.mkdirSync("database") : undefined
+!fs.existsSync(dbPath) ? fs.mkdirSync(dbPath) : undefined
 
 const PORT = 3000;
 const isMacOS = process.platform === 'darwin';
@@ -101,10 +100,6 @@ const uplaodSingle = upload.fields([
 ])
 
 
-// expressApp.listen(PORT, () => {
-//     console.log(`Server running at http://localhost:${PORT}/`);
-// });
-
 expressApp.get('/', (req, res) => {
     var filepathtable = __dirname + "/renders/table.html";
     filepathtable = filepathtable.replaceAll("\\", "/");
@@ -119,7 +114,6 @@ Params
     req - request object,
     res - response object
 */
-
 expressApp.post('/addNew', uploadList, (req, res) => {
     const newCMLKey = req.body.cmlNumber;
     const inputOrgName = req.body.orgName;
@@ -466,6 +460,7 @@ app.on('ready', () => {
 
 
     let mainWindow = new BrowserWindow(mainWindowOptions);
+    mainWindow.removeMenu();
     mainWindow.loadURL(`http://localhost:${PORT}/`);
 
     expressApp.listen(PORT, () => {
@@ -475,10 +470,11 @@ app.on('ready', () => {
         mainWindow = null;
     });
 });
-
 // app.whenReady().then(() => {
 //     createWindow();
 // });
+
+
 
 app.on('window-all-closed', () => {
     if (!isMacOS) {
