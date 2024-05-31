@@ -7,8 +7,12 @@ const ejs = require("ejs")
 const dbFilePath = "resources/app/fileList.json"
 const dbPath = "resources/app/database"
 
+/**
+ * @param {string} dbFilePath      The path to the JSON file storing the list of uploaded files.
+ * @param {object} fs              The Node.js File System module.
+ * @param {object} fs.constants.F_OK    Constant used to check file existence.
+ */
 
-// Creating the database file if not present
 fs.access(dbFilePath, fs.constants.F_OK, (err) => {
     if (err) {
         fs.writeFile(dbFilePath, '', (err) => {
@@ -27,7 +31,10 @@ fs.access(dbFilePath, fs.constants.F_OK, (err) => {
 });
 
 
-// Creating the database folder if not present
+/**
+ * @param {string} dbPath       The path to the directory where files are stored.
+ * @param {object} fs           The Node.js File System module.
+ */
 !fs.existsSync(dbPath) ? fs.mkdirSync(dbPath) : undefined
 
 const PORT = 3000;
@@ -36,6 +43,11 @@ const expressApp = express();
 expressApp.engine('html', ejs.renderFile);
 expressApp.use(express.static(path.join(__dirname, "/assets")))
 
+/**
+ * @param {object} req         The HTTP request object.
+ * @param {object} res         The HTTP response object.
+ * @param {function} next      Callback function to pass control to the next middleware.
+ */
 expressApp.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -49,20 +61,31 @@ const databaseConfig = {
     "inspectionReport": "Inspection Reports",
 }
 
+/**
+ * @param {string} directory   The directory where the file will be stored.
+ * @param {string} filename    The original filename.
+ * @returns {string}           A unique filename to avoid conflicts.
+ */
 const generateUniqueFilename = (directory, filename) => {
     let base = path.basename(filename, path.extname(filename));
     let ext = path.extname(filename);
     let counter = 1;
     let newFilename = filename;
-    
+
     while (fs.existsSync(path.join(directory, newFilename))) {
         newFilename = `${base} (${counter})${ext}`;
         counter++;
     }
-    
+
     return newFilename;
 }
 
+
+/**
+ * @param {object} req        The HTTP request object.
+ * @param {object} file       The file object from the request.
+ * @param {function} cb       Callback function to specify the destination.
+ */
 const multerStore = multer.diskStorage({
     destination: function (req, file, cb) {
         let cmlKey = req.body.cmlNumber;
@@ -116,12 +139,22 @@ const uplaodSingle = upload.fields([
     { name: 'single-file' },
 ])
 
+
+/**
+ * @param {object} req        The HTTP request object.
+ * @param {object} res        The HTTP response object.
+ */
 expressApp.get('/', (req, res) => {
     var filepathtable = __dirname + "/renders/table.html";
     filepathtable = filepathtable.replaceAll("\\", "/");
     res.render(filepathtable)
 });
 
+
+/**
+ * @param {object} req        The HTTP request object.
+ * @param {object} res        The HTTP response object.
+ */
 expressApp.post('/addNew', uploadList, (req, res) => {
     const newCMLKey = req.body.cmlNumber;
     const inputOrgName = req.body.orgName;
@@ -179,6 +212,11 @@ expressApp.post('/addNew', uploadList, (req, res) => {
     };
 });
 
+
+/**
+ * @param {object} req        The HTTP request object.
+ * @param {object} res        The HTTP response object.
+ */
 expressApp.post('/addSingle', uplaodSingle, (req, res) => {
     const newCMLKey = req.body.cmlNumber;
     const allFiles = req.files;
@@ -206,7 +244,10 @@ expressApp.post('/addSingle', uplaodSingle, (req, res) => {
     });
 });
 
-
+/**
+ * @param {object} req        The HTTP request object.
+ * @param {object} res        The HTTP response object.
+ */
 expressApp.get('/view/:searchKey?', (req, res) => {
 
     const fileListData = JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
@@ -245,6 +286,10 @@ expressApp.get('/view/:searchKey?', (req, res) => {
     res.render(filepathView, { data })
 });
 
+/**
+ * @param {object} req        The HTTP request object.
+ * @param {object} res        The HTTP response object.
+ */
 expressApp.get('/displayData/:searchKey?', (req, res) => {
     const fileTypes = ["licenceDocs", "correspondence", "testReports", "inspectionReport"];
     try {
@@ -297,6 +342,10 @@ expressApp.get('/displayData/:searchKey?', (req, res) => {
     }
 });
 
+/**
+ * @param {object} req        The HTTP request object.
+ * @param {object} res        The HTTP response object.
+ */
 expressApp.delete('/deleteRow/:key', (req, res) => {
     const keyToDelete = req.params.key;
 
@@ -324,10 +373,13 @@ expressApp.delete('/deleteRow/:key', (req, res) => {
     res.redirect("/")
 });
 
+
+/**
+ * @param {object} req        The HTTP request object.
+ * @param {object} res        The HTTP response object.
+ */
 expressApp.get('/delSingle/:fileID', (req, res) => {
-
     const fullParamterList = req.params.fileID.split('-');
-
     const delCMLKey = fullParamterList[0];
     const delFileType = fullParamterList[1];
     const delFileName = fullParamterList[2];
@@ -356,6 +408,7 @@ expressApp.get('/delSingle/:fileID', (req, res) => {
 
 });
 
+
 app.on('ready', () => {
     const mainWindowOptions = {
         title: "Document Explorer",
@@ -369,6 +422,9 @@ app.on('ready', () => {
     mainWindow.removeMenu();
     mainWindow.loadURL(`http://localhost:${PORT}/`);
 
+    /**
+    * Start the Express server and log the running URL.
+    */
     expressApp.listen(PORT, () => {
         console.log(`Server running at http://localhost:${PORT}/`);
     });
@@ -377,12 +433,19 @@ app.on('ready', () => {
     });
 });
 
+
+/**
+ * Quit the application when all windows are closed, except on macOS.
+ */
 app.on('window-all-closed', () => {
     if (!isMacOS) {
         app.quit();
     }
 })
 
+/**
+ * Recreate the main window if the application is reactivated and no windows are open.
+ */
 app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
         createWindow()
