@@ -14,9 +14,9 @@ Node Explorer is a web application designed to explore and visualize the node st
 - npm or yarn
 
 ### Steps
-1. Clone the repository:
+1. Clone the `production` branch:
     ```sh
-    git clone https://github.com/kaythecosmic/node-explorer.git
+    git clone "https://github.com/kaythecosmic/node-explorer.git" -b production
     ```
 2. Navigate to the project directory:
     ```sh
