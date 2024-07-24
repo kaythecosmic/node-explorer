@@ -18,10 +18,10 @@ A web application designed for the efficient exploration and visualization of fi
 
 ### Steps
 
-1. Clone the repository:
+1. Clone the `production` branch:
 
    ```sh
-   git clone https://github.com/kaythecosmic/node-explorer.git
+    git clone --branch production https://github.com/kaythecosmic/node-explorer.git
    ```
 
 2. Navigate to the project directory:
@@ -36,31 +36,17 @@ A web application designed for the efficient exploration and visualization of fi
    npm install
    ```
 
-4. Install Electron Packager:
+4. Install Electron Forge Packager:
 
    ```sh
-   npm install electron-packager
+   npm install electron-forge
    ```
 
 5. Package the application:
 
    ```sh
-   electron-packager . "BIS Explorer" --platform=win32 --arch=x64
+   npm run make
    ```
-
-## Usage
-
-1. Start the application:
-   open the BIS Explore.exe application
-
-## Project Structure
-
-- `assets/`: Contains image and other static assets.
-- `renders/`: Contains rendered output files.
-- `main.js`: Main JavaScript file for the application.
-- `package.json`: Project configuration and dependencies.
-- `.gitignore`: Specifies files and directories to be ignored by Git.
-- `LICENSE`: License information for the project.
 
 ## Contributing
 
