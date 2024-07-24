@@ -6,13 +6,23 @@ const fs = require("fs")
 const ejs = require("ejs")
 const dbFilePath = "resources/app/fileList.json"
 const dbPath = "resources/app/database"
+if (require('electron-squirrel-startup')) app.quit();
+
+
+const createIfMissingDirectories = (dirPath) => {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+};
+
+createIfMissingDirectories(dbPath);
+createIfMissingDirectories(path.dirname(dbFilePath));
 
 /**
  * @param {string} dbFilePath      The path to the JSON file storing the list of uploaded files.
  * @param {object} fs              The Node.js File System module.
  * @param {object} fs.constants.F_OK    Constant used to check file existence.
  */
-
 fs.access(dbFilePath, fs.constants.F_OK, (err) => {
     if (err) {
         fs.writeFile(dbFilePath, '', (err) => {
@@ -261,9 +271,13 @@ expressApp.get('/view/:searchKey?', (req, res) => {
 
     for (let url = 0; url < fileList.length; url++) {
         const urlString = fileList[url];
-        const fileName = urlString.split('/');
-        var orgFileName = fileName[fileName.length - 1].split('-');
-        orgFileName = orgFileName[orgFileName.length - 1];
+        const fileNameList = urlString.split('/');
+        var fileName = fileNameList[fileNameList.length - 1];
+
+        var firstHyphenIndex = fileName.indexOf('-');
+        var secondHyphenIndex = fileName.indexOf('-', firstHyphenIndex + 1);
+        
+        var orgFileName = fileName.slice(secondHyphenIndex + 1)
         let fileUrl = `file://${app.getAppPath()}/${urlString}`;
         fileUrl = fileUrl.replaceAll("\\", "/");
         fileUrl = fileUrl.replaceAll(" ", "%20");
@@ -346,6 +360,7 @@ expressApp.get('/displayData/:searchKey?', (req, res) => {
  * @param {object} req        The HTTP request object.
  * @param {object} res        The HTTP response object.
  */
+
 expressApp.delete('/deleteRow/:key', (req, res) => {
     const keyToDelete = req.params.key;
 
@@ -373,17 +388,18 @@ expressApp.delete('/deleteRow/:key', (req, res) => {
     res.redirect("/")
 });
 
-
 /**
  * @param {object} req        The HTTP request object.
  * @param {object} res        The HTTP response object.
  */
 expressApp.get('/delSingle/:fileID', (req, res) => {
     const fullParamterList = req.params.fileID.split('-');
+    const fileIDMain = encodeURIComponent(req.params.fileID);
+    const decodedFileID = decodeURIComponent(fileIDMain)
     const delCMLKey = fullParamterList[0];
     const delFileType = fullParamterList[1];
     const delFileName = fullParamterList[2];
-    const delFileURL = `database/${delCMLKey}/${delFileType}/${delCMLKey}-${delFileType}-${delFileName}`
+    const delFileURL = `database/${delCMLKey}/${delFileType}/${decodedFileID}`
 
     const filePathToDelete = path.join(app.getAppPath(), delFileURL);
     fs.unlinkSync(filePathToDelete);

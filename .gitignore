@@ -2,4 +2,5 @@
 .env
 /database
 /BIS Explorer-win32-x64
-
+/out
+/make.bat

@@ -63,7 +63,7 @@
                         <td class="actions-cell">
                             <div class="action-button-container">
                                 <div>
-                                    <a href="/delSingle/<%=data.cmlnum%>-<%=data.filekey%>-<%=data.tableRows[i].filename%>"
+                                    <a href="/delSingle/<%=data.cmlnum%>-<%=data.filekey%>-<%=encodeURIComponent(data.tableRows[i].filename)%>"
                                         class="open-link">
                                         Remove
                                     </a>
